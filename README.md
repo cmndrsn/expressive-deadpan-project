@@ -1,9 +1,18 @@
 # Expressive/Deadpan Project
 
-This paper contains the data and code used in Anderson, Ling, & Schutz (under review).
+## Overview
 
-Analysis code is available as .qmd and .r files in /Analysis. To reproduce analyses from the paper, open Analysis.qmd. Data are contained in /Data. 
-*R* dependencies and custom functions are viewable in /Functions/Functions.R. Functions.R and Setup.R are sourced within Analysis.qmd.
+This paper contains the data, code, and figures in Anderson, Ling, & Schutz (under review). We performed analyses using *R* version 4.2.3 (2023-03-15) on Windows 10 operating system (version 22H2).
+
+## File organization
+
+Analysis code is in .qmd and .r files within the repository. 
+
+Data are contained in `/Data`.  *R* dependencies and custom functions are viewable in `/R`; these are sourced at the top of `Analysis.qmd`. `Libraries.R` contains all dependencies required for the analysis code to run. `Functions.R` contains custom functions written for this project. `Preprocessing.R` includes additional code for figure formatting, as well as pre-processing to reduce the bloat in the Analysis qmd file.
 Figures from the analyses are viewable in /Figures.
 
-To get started, open Expressive-Deadpan.Rproj from the repository, and then Analysis/Analysis.qmd to reproduce analyses.
+`Analysis/Analysis.qmd` contains the analyses from the manuscript. 
+
+# Getting started
+
+To get started, open `/R/Libraries.R` and ensure all libraries are installed. The *R* package to install a library is `install.packages()`.   Once all dependencies are installed, open `Expressive-Deadpan.Rproj` from the repository, and then `Analysis/Analysis.qmd` to reproduce analyses.
