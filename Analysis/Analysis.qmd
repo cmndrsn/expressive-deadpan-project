@@ -357,7 +357,7 @@ print(t5)
 print(t6)
 
 print(round(p.adjust(c(t1$p.value, t2$p.value, t3$p.value, 
-           t4$p.value, t5$p.value, t6$p.value), method = 'none'), 5))
+           t4$p.value, t5$p.value, t6$p.value)), 5))
 
 remove(t1,t2,t3,t4,t5,t6)
 ```
