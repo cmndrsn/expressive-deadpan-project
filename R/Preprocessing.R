@@ -1,3 +1,15 @@
+# Pre-processing ----------------------------------------------------------
+
+# Set seed for simulations
+
+set.seed(123)
+
+# For writing pretty key signatures ---------------------------------------
+
+flatSym <- '\\u266d'
+sharpSym <- '\\u266f'
+
+
 # Measure differences between conditions ----------------------------------
 
 bootData$changeValence = .getPercentChange(bootData$valenceA, bootData$valenceB)
@@ -115,27 +127,38 @@ percentLegend = cowplot::get_plot_component(percentLegendManual, 'guide-box-top'
 
 # Layout matrices ---------------------------------------------------------
 
-fig1Layout <- rbind(
-             c(2,2,2),
-             c(2,2,2),              
-             c(2,2,2),
-             c(3,3,3),
-             c(3,3,3),
-             c(3,3,3),
-             c(1,1,1))
+# fig1Layout <- rbind(
+#              c(2,2,2),
+#              c(2,2,2),              
+#              c(2,2,2),
+#              c(3,3,3),
+#              c(3,3,3),
+#              c(3,3,3),
+#             c(1,1,1))
+
+
+circLayout <- rbind(
+  rep(1, each = 8),
+  rep(c(2,3), each = 6),
+  rep(c(2,3), each = 6),
+  rep(c(2,3), each = 6),
+  rep(c(2,3), each = 6),
+  rep(c(2,3), each = 6),
+  rep(c(2,3), each = 6)
+)
+
+
+# corrSigLayout <-  rbind(
+#                         c(2,2,2,2,3,3,3,3),
+#                         c(2,2,2,2,3,3,3,3),              
+#                         c(2,2,2,2,3,3,3,3),
+#                         c(2,2,2,2,3,3,3,3),
+#                         c(2,2,2,2,3,3,3,3),
+#                         c(2,2,2,2,3,3,3,3),
+#                         c(1,1,1,1,1,1,1,1))
 
 
 corrSigLayout <-  rbind(
-                        c(2,2,2,2,3,3,3,3),
-                        c(2,2,2,2,3,3,3,3),              
-                        c(2,2,2,2,3,3,3,3),
-                        c(2,2,2,2,3,3,3,3),
-                        c(2,2,2,2,3,3,3,3),
-                        c(2,2,2,2,3,3,3,3),
-                        c(1,1,1,1,1,1,1,1))
-
-
-corrSigLayout4 <-  rbind(
                         rep(c(2,3,5,4), times = c(6,4,4,6)),
                         rep(c(2,3,5,4), times = c(6,4,4,6)),              
                         rep(c(2,3,5,4), times = c(6,4,4,6)),
@@ -146,6 +169,14 @@ corrSigLayout4 <-  rbind(
                         )
 
 
+pctCorLay = rbind(
+  c(2,3,4),
+  c(2,3,4),
+  c(2,3,4),
+  c(5,6,7),
+  c(5,6,7),
+  c(5,6,7),
+  c(1,1,1))
 
 # Bootstrap Significance Plots --------------------------------------------
 

@@ -1,27 +1,5 @@
-# Load libraries ----------------------------------------------------------
 
-library(here)
-library(pwrss)
-library(MKinfer)
-library(coin)
-library(rcompanion)
-library(MASS)
-library(patchwork)
-library(betareg)
-library(ggpubr)
-library(tidyverse)
-library(gridExtra)
-library(ggpubr)
-library(ggrepel)
-
-# Set seed for simulations
-
-set.seed(123)
-
-# For writing pretty key signatures ---------------------------------------
-
-flatSym <- '\\u266d'
-sharpSym <- '\\u266f'
+# Functions ---------------------------------------------------------------
 
 # for calculating percent differences and changes....
 .getPercentDifference <- function(X, Y) (abs(X - Y)/((X+Y)/2))*100

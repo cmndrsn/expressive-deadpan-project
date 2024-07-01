@@ -4,18 +4,20 @@ author: "Cameron J. Anderson, Jamie Ling, Michael Schutz"
 format: html
 ---
 
-## Power Analysis
+# Data Set-up
 
-**Data Set-up**
-
-```{r results='hide', message=FALSE}
+```{r results='hide', message=FALSE, warning = FALSE}
 # load data
 load(paste0(here::here(), '/Data/Bootstrap.RData'))
 emoData <- read.csv(paste0(here::here(), '/Data/Ratings.csv'))
+
 # load dependencies & functions, analyses
-source(paste0(here::here(), '/Functions/Functions.R'))
-source(paste0(here::here(), '/Analysis/Setup.R'))
+source(paste0(here::here(), '/R/Libraries.R'))
+source(paste0(here::here(), '/R/Functions.R'))
+source(paste0(here::here(), '/R/Preprocessing.R'))
 ```
+
+# Power Analysis
 
 ```{r}
 pwrss::pwrss.f.reg(r2 = 0.4, k = 3, power = .9)
@@ -46,18 +48,6 @@ p2 = pairedCircumplex(chop, groupCol = 'expID',
   labs(subtitle='Chopin', x = '', y = '')
 
 cowplot::get_plot_component(p1, 'guide-box-bottom') -> circLeg
-
-circLayout <- rbind(
-   rep(1, each = 8),
-  rep(c(2,3), each = 6),
-  rep(c(2,3), each = 6),
-  rep(c(2,3), each = 6),
-  rep(c(2,3), each = 6),
-  rep(c(2,3), each = 6),
-  rep(c(2,3), each = 6)
-  )
-
-
 
 grid.arrange(circLeg, 
              p1 + theme(legend.position = 'none'), 
@@ -312,18 +302,6 @@ percentCorrelationPlot(expressiveRatingsAvg,
                      axis.title.y = element_blank(),
                      axis.line.y = element_blank(),
                      legend.position = 'none') -> cp6
-
-
-
-  pctCorLay = rbind(
-                c(2,3,4),
-                c(2,3,4),
-                c(2,3,4),
-                c(5,6,7),
-                c(5,6,7),
-                c(5,6,7),
-                c(1,1,1))
-
 grid.arrange(percentLegend,
              cp1, cp2, cp3, cp4, cp5, cp6,
              left = 'Absolute Difference (%)',
@@ -617,7 +595,7 @@ grid.arrange(correlationLegend,
              bs1+theme(axis.title.y = element_blank()),
              cc2,
              bs2+theme(axis.title.y = element_blank()),
-             layout_matrix = corrSigLayout4) -> all_corr_plots
+             layout_matrix = corrSigLayout) -> all_corr_plots
 
 #ggsave(paste0('Figures/Fig 3-', Sys.Date(), '.png'), plot = all_corr_plots,
 #       height = 5, width = 12.5, units = 'in')
@@ -667,5 +645,4 @@ plot_annotation(subtitle = "Relation between mode's main effect and uncentred
                 (left) vs. centred (right) interaction terms") 
 #ggsave('Figures/SupplementalFig.png')
 ```
-
 Correlation between mode and (i) mode x pitch height interaction term (top); (ii) mode x attack rate interaction term (bottom). Left: pitch height and attack rate uncentered; right: pitch height and attack rate centered at respective mean value.
