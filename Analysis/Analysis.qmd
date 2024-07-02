@@ -1,17 +1,21 @@
 ---
 title: "Expressive Deadpan Analyses"
 author: "Cameron J. Anderson, Jamie Ling, Michael Schutz"
-format: html
+format:
+  html:
+    embed-resources: true
 ---
 
 # Data Set-up
 
 ```{r results='hide', message=FALSE, warning = FALSE}
 # load data
+
 load(paste0(here::here(), '/Data/Bootstrap.RData'))
 emoData <- read.csv(paste0(here::here(), '/Data/Ratings.csv'))
 
 # load dependencies & functions, analyses
+
 source(paste0(here::here(), '/R/Libraries.R'))
 source(paste0(here::here(), '/R/Functions.R'))
 source(paste0(here::here(), '/R/Preprocessing.R'))
@@ -33,9 +37,7 @@ fullDat %>% group_by(composer, albumID, condition, key) %>%
             valence = mean(valence)) -> summaryDat
 ```
 
-## Research Question 1
-
-**How similar are ratings?**
+### How similar are ratings?
 
 ```{r message=FALSE, warning=FALSE}
 
@@ -96,12 +98,9 @@ as.numeric(rcompanion::wilcoxonPairedR(x = summaryDat$arousal, g = summaryDat$co
 
 ```
 
-\
-**arousal differs, valence doesn't**
+-   Arousal exhibits significant differences between conditions.
 
-## Research Question 2
-
-#### Do these differences appear for each composer?
+### How do differences between conditions apply to individual composers?
 
 ```{r}
 # chopin comparisons
@@ -129,6 +128,8 @@ print(t4)
 p.adjust(c(t1$p.value, t2$p.value, t3$p.value, t4$p.value))
 remove(t1, t2, t3, t4)
 
+# Effect sizes:
+
 rcompanion::wilcoxonPairedR(x = subset(summaryDat, composer == 'bach')$valence, 
                             g = subset(summaryDat, composer == 'bach')$condition, ci = T) |> as.numeric()
 
@@ -144,9 +145,9 @@ rcompanion::wilcoxonPairedR(x = subset(summaryDat, composer == 'chopin')$arousal
 
 ```
 
-### Which Features Predict Valence and Arousal Differences?
+### Which features predict valence and arousal differences?
 
-To assess this, we calculate the percent difference of valence and arousal ratings,
+To assess this, we'll calculate the percent difference of valence and arousal ratings,
 
 $$
 d(x, y) = \frac{|x-y|}{[\frac{(x+y)}{2}]}*100,
@@ -180,7 +181,7 @@ summary(expressiveRatingsAvg$valenceDiff)
 summary(expressiveRatingsAvg$arousalDiff)
 ```
 
-#### How similar are valence and arousal ratings?
+### How similar are valence and arousal ratings?
 
 ```{r}
 # overall correlations
@@ -195,20 +196,6 @@ print(p.adjust(c(t1$p.value, t2$p.value)))
 remove(t1, t2)
 
 ```
-
-#### Do values significantly differ from zero?
-
-```{r}
-wilcox.test(expressiveRatingsAvg$arousalDiff, exact = F) -> t1
-wilcox.test(expressiveRatingsAvg$valenceDiff, exact = F) -> t2
-print(t1)
-print(t2)
-print(p.adjust(c(t1$p.value, t2$p.value)))
-remove(t1, t2)
-
-```
-
-**Valence and arousal percent differences significantly differ from 0**
 
 **Do they differ between major and minor modes?**
 
@@ -308,8 +295,6 @@ grid.arrange(percentLegend,
             # ncol = 3, nrow = 2,
              layout_matrix = pctCorLay) -> cuePercentPlot
 
-
-
 #  ggsave(filename = paste0('Figures/Fig 2-', Sys.Date(), '.png'),
 #         plot = cuePercentPlot,
 #         width = 7.5, height = 4.5)
@@ -362,16 +347,6 @@ print(round(p.adjust(c(t1$p.value, t2$p.value, t3$p.value,
 remove(t1,t2,t3,t4,t5,t6)
 ```
 
-```{r}
-cor.test(expressiveRatingsAvg$arousalDiff, expressiveRatingsAvg$arPerf)
-cor.test(expressiveRatingsAvg$arousalDiff, expressiveRatingsAvg$rms)
-cor.test(expressiveRatingsAvg$arousalDiff, expressiveRatingsAvg$pitchHeight)
-```
-
-#### Which cues predict differences in valence and arousal?
-
-Attack rate and RMS significantly predict differences in arousal ratings, whereas pitch height and RMS significantly predict differences in valence ratings
-
 ## **Beta Regression**
 
 Perform beta regression to assess significance of differences while dealing with positive (0,1) data:
@@ -404,11 +379,10 @@ bregVal = betareg(valenceDiffB ~ arPerf + rms +
       pitchHeight + mode + (arPerf*mode) +
       (rms*mode) + (pitchHeight*mode), 
     data = expressiveRatingsAvg2)
-
-summary(bregAro)
 ```
 
 ```{r}
+summary(bregAro)
 summary(bregVal)
 ```
 
@@ -416,13 +390,10 @@ summary(bregVal)
 
 Next we employ a bootstrap approach to assess how many pieces significantly differed in valence and arousal
 
-```{r}
-# first, prepare data. Need 48 unique piece IDs
-fullDat$pieceID = paste0(fullDat$pieceID,
-                         substr(fullDat$composer, 1, 1))
-```
-
 ```{r, message = F, results='hide'}
+
+# fullDat$pieceID = paste0(fullDat$pieceID,
+#                          substr(fullDat$composer, 1, 1))
 
 # set.seed(1)
 # bootstrapCircumplexDifference(
@@ -470,7 +441,9 @@ ggplot(expressCVSig, aes(x = group, y = meanCVAro*100,
 ```
 
 ```{r, warning=FALSE, message=FALSE}
-apply(expressCVSig,2, function(x) round(as.numeric(x)*100, 4))
+apply(expressCVSig[,2:ncol(expressCVSig)],2, function(x) round(as.numeric(x)*100, 4)) -> expressCVSig[,2:ncol(expressCVSig)]
+
+expressCVSig
 ```
 
 # Plot differences
@@ -645,4 +618,5 @@ plot_annotation(subtitle = "Relation between mode's main effect and uncentred
                 (left) vs. centred (right) interaction terms") 
 #ggsave('Figures/SupplementalFig.png')
 ```
+
 Correlation between mode and (i) mode x pitch height interaction term (top); (ii) mode x attack rate interaction term (bottom). Left: pitch height and attack rate uncentered; right: pitch height and attack rate centered at respective mean value.

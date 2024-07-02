@@ -2,11 +2,10 @@
 # Functions ---------------------------------------------------------------
 
 # for calculating percent differences and changes....
+
 .getPercentDifference <- function(X, Y) (abs(X - Y)/((X+Y)/2))*100
 .getCoefficientofVariation <- function(X) sd(X)/mean(X)
 .getPercentChange <- function(X, Y) ((X - Y)/abs(Y))*100
-
-# package conflict with MASS for select function, so re-defining here:
 
 collapseMeasures <- function(dat,includePickups=T)
 {
@@ -224,10 +223,14 @@ pairedCircumplex <- function(dat, groupCol = expID,
 
 # Bootstrap Differences ---------------------------------------------------
 
-# Step 1: Randomly sample 24 pieces at random with replacement in bootstrap to get a range of pieceIDs.
-# Step 2: randomly sample 1 of the ratings of each piece in experiment 1 and 2, take the difference in a function,
-# and apply this function across each piece ID in the array of piece IDs.  
-# This effectively creates a new sample of differences across each randomly [& replaced] sample from the piece ID array
+# Step 1: For each condition, randomly sample 30 ratings (with replacement) for 
+## a given piece. Calculate mean absolute difference for valence and arousal, 
+## along with Euclidean distance 
+# Step 2: After calculating summary statistics on individual pieces, ungroup
+## data and calculate coefficient of variation across all sampled pieces.
+## Steps 1 and 2 give us the results of 1 virtual experiment.
+# Step 3: Repeat this process for 10,000 virtual experiments
+# Step 4: Calculate bootstrap confidence intervals for all 10,000 replications.
 
 
 # this function takes the difference between a randomly sampled row corresponding to a pieceID of interest from 
@@ -265,10 +268,7 @@ pairedCircumplex <- function(dat, groupCol = expID,
   # return values as dataframe
   
   returnValues <- data.frame(valenceDiff, arousalDiff, euclidDiff, pieceID = pieceToSample,
-                            valenceA, valenceB, arousalA, arousalB#,
-                            #valenceA_cv, valenceB_cv, arousalA_cv, arousalB_cv
-                            #participant1, participant2
-  )
+                            valenceA, valenceB, arousalA, arousalB)
   
   return(returnValues)
 }
