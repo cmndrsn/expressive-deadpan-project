@@ -23,21 +23,25 @@ source(paste0(here::here(), '/R/Preprocessing.R'))
 
 # Power Analysis
 
+We first performed a power analysis to identify how many participants to include in each experiment.
+
 ```{r}
 pwrss::pwrss.f.reg(r2 = 0.4, k = 3, power = .9)
 
 ```
 
-### Summarize valence and arousal ratings by piece
+# Data Analyses
+
+This code prepares a data frame collapsing across participant ratings.
 
 ```{r message=F, results='hide', warning=FALSE}
 # create summary data frame
-fullDat %>% group_by(composer, albumID, condition, key) %>% 
-  summarize(arousal = mean(arousal),
+fullDat %>% dplyr::group_by(composer, albumID, condition, key) %>% 
+  dplyr::summarize(arousal = mean(arousal),
             valence = mean(valence)) -> summaryDat
 ```
 
-### How similar are ratings?
+## Circumplex plot (Fig 1)
 
 ```{r message=FALSE, warning=FALSE}
 
@@ -51,7 +55,7 @@ p2 = pairedCircumplex(chop, groupCol = 'expID',
 
 cowplot::get_plot_component(p1, 'guide-box-bottom') -> circLeg
 
-grid.arrange(circLeg, 
+gridExtra::grid.arrange(circLeg, 
              p1 + theme(legend.position = 'none'), 
              p2 + theme(legend.position = 'none'),
              layout_matrix = circLayout,
@@ -157,16 +161,18 @@ where $x$ represents ratings in the expressive condition averaged by piece and $
 
 ```{r}
 # first calculate averaged values per piece in each condition
-expressive %>% group_by(composer, key) %>% 
-  summarize(valence = mean(valence),
+expressive %>% 
+  dplyr::group_by(composer, key) %>% 
+  dplyr::summarize(valence = mean(valence),
             arousal = mean(arousal),
             arPerf = mean(arPerf),
             pitchHeight = mean(pitchHeight),
             rms = mean(rms),
             mode = unique(mode)) -> expressiveRatingsAvg
 
-deadpan %>% group_by(composer, key) %>% 
-  summarize(valence = mean(valence),
+deadpan %>% 
+  dplyr::group_by(composer, key) %>% 
+  dplyr::summarize(valence = mean(valence),
             arousal = mean(arousal)) -> deadpanRatingsAvg
 
 # now calculate percentage difference in ratings:
@@ -186,9 +192,11 @@ summary(expressiveRatingsAvg$arousalDiff)
 ```{r}
 # overall correlations
 
-cor.test(subset(summaryDat, condition == 'expressive')$valence, subset(summaryDat, condition == 'deadpan')$valence) -> t1
+cor.test(subset(summaryDat, condition == 'expressive')$valence, 
+         subset(summaryDat, condition == 'deadpan')$valence) -> t1
 
-cor.test(subset(summaryDat, condition == 'expressive')$arousal, subset(summaryDat, condition == 'deadpan')$arousal) -> t2
+cor.test(subset(summaryDat, condition == 'expressive')$arousal, 
+         subset(summaryDat, condition == 'deadpan')$arousal) -> t2
 
 print(t1)
 print(t2)
@@ -200,10 +208,12 @@ remove(t1, t2)
 **Do they differ between major and minor modes?**
 
 ```{r}
-expressiveRatingsAvg %>% group_by(mode) %>% 
-  summarize(meanValenceDiff = mean(valenceDiff), 
+expressiveRatingsAvg %>% 
+  dplyr::group_by(mode) %>% 
+  dplyr::summarize(meanValenceDiff = mean(valenceDiff), 
             sdValenceDiff=sd(valenceDiff), 
-            meanArousalDiff = mean(arousalDiff), sdArousalDiff=sd(arousalDiff))
+            meanArousalDiff = mean(arousalDiff), 
+            sdArousalDiff=sd(arousalDiff))
 
 ```
 
@@ -221,9 +231,9 @@ print(p.adjust(c(t1$p.value, t2$p.value)))
 remove(t1, t2)
 
 
-wilcoxonR(x=expressiveRatingsAvg$valence,
+rcompanion::wilcoxonR(x=expressiveRatingsAvg$valence,
           g=expressiveRatingsAvg$mode, ci = T) |> as.numeric()
-wilcoxonR(x=expressiveRatingsAvg$arousal,
+rcompanion::wilcoxonR(x=expressiveRatingsAvg$arousal,
           g=expressiveRatingsAvg$mode, ci = T) |> as.numeric()
 
 ```
@@ -361,22 +371,23 @@ valenceDiffB = betaTransform(expressiveRatingsAvg$valenceDiff)
 
 # center values of attack rate, rms, pitch height
 
-expressiveRatingsAvg2 = expressiveRatingsAvg
+expressiveRatingsAvg2 <- expressiveRatingsAvg
 
-expressiveRatingsAvg2$arPerf = expressiveRatingsAvg$arPerf - mean(expressiveRatingsAvg$arPerf)
-expressiveRatingsAvg2$pitchHeight = expressiveRatingsAvg$pitchHeight - mean(expressiveRatingsAvg$pitchHeight)
-expressiveRatingsAvg2$rms = expressiveRatingsAvg$rms - mean(expressiveRatingsAvg$rms)
-expressiveRatingsAvg2$mode = as.numeric(factor(expressiveRatingsAvg$mode)) - 1.5
+expressiveRatingsAvg2$arPerf <- expressiveRatingsAvg$arPerf - mean(expressiveRatingsAvg$arPerf)
+expressiveRatingsAvg2$pitchHeight <- expressiveRatingsAvg$pitchHeight - mean(expressiveRatingsAvg$pitchHeight)
+expressiveRatingsAvg2$rms <- expressiveRatingsAvg$rms - mean(expressiveRatingsAvg$rms)
+expressiveRatingsAvg2$mode <- as.numeric(factor(expressiveRatingsAvg$mode)) - 1.5
 
 ```
 
 ```{r}
 set.seed(123)
 
-bregAro = betareg(arousalDiffB ~ arPerf + rms + 
-          pitchHeight + mode, data = expressiveRatingsAvg2)
-bregVal = betareg(valenceDiffB ~ arPerf + rms + 
-      pitchHeight + mode + (arPerf*mode) +
+bregAro = betareg::betareg(
+  arousalDiffB ~ arPerf + rms + pitchHeight + mode, 
+  data = expressiveRatingsAvg2)
+bregVal = betareg::betareg(
+  valenceDiffB ~ arPerf + rms + pitchHeight + mode + (arPerf*mode) +
       (rms*mode) + (pitchHeight*mode), 
     data = expressiveRatingsAvg2)
 ```
@@ -412,7 +423,7 @@ Next we employ a bootstrap approach to assess how many pieces significantly diff
 # Coefficients of Variation
 
 ```{r}
-data.frame(
+expressCVSig <- data.frame(
   group = c('Expressive', 'Deadpan'),
   meanCVVal = c(mean(bootData$valenceA_cv), mean(bootData$valenceB_cv)),
   lciCVVal = c(quantile(bootData$valenceA_cv, c(0.025)),
@@ -424,16 +435,25 @@ data.frame(
                quantile(bootData$arousalB_cv, c(0.025))),
   uciCVAro = c(quantile(bootData$arousalA_cv, c(0.975)),
                quantile(bootData$arousalB_cv, c(0.975)))
-) -> expressCVSig
+) 
 
 ggplot(expressCVSig, aes(x = group, y = meanCVVal*100,
-                         ymin = lciCVVal*100, ymax = uciCVVal*100))+
-  geom_point()+ geom_errorbar()+ylim(20, 50)+theme_classic()+
-  labs(y = 'Coefficient of Variation (%)', x = 'Condition', subtitle='Valence')+
-ggplot(expressCVSig, aes(x = group, y = meanCVAro*100,
-                         ymin = lciCVAro*100, ymax = uciCVAro*100))+
-  geom_point()+ geom_errorbar()+ylim(20,50)+theme_classic()+
-  labs(y = '', x = 'Condition', subtitle='Arousal')+
+                         ymin = lciCVVal*100, ymax = uciCVVal*100)) +
+  geom_point() + 
+  geom_errorbar() + 
+  ylim(20, 50) + 
+  theme_classic()+
+  labs(y = 'Coefficient of Variation (%)', 
+       x = 'Condition', subtitle='Valence') +
+  
+ggplot(expressCVSig, 
+       aes(x = group, 
+           y = meanCVAro*100,
+          ymin = lciCVAro*100, 
+          ymax = uciCVAro*100))+
+  geom_point()+ geom_errorbar()+ylim(20,50) +
+  theme_classic() +
+  labs(y = '', x = 'Condition', subtitle='Arousal') +
   theme(axis.ticks.y = element_blank(),
         axis.text.y = element_blank(),
         axis.line.y = element_blank())
@@ -441,7 +461,9 @@ ggplot(expressCVSig, aes(x = group, y = meanCVAro*100,
 ```
 
 ```{r, warning=FALSE, message=FALSE}
-apply(expressCVSig[,2:ncol(expressCVSig)],2, function(x) round(as.numeric(x)*100, 4)) -> expressCVSig[,2:ncol(expressCVSig)]
+expressCVSig[,2:ncol(expressCVSig)] <- apply(
+  expressCVSig[,2:ncol(expressCVSig)],2, 
+      function(x) round(as.numeric(x)*100, 4)) 
 
 expressCVSig
 ```
@@ -449,11 +471,15 @@ expressCVSig
 # Plot differences
 
 ```{r}
-bootPlotDF$key <- nameKeysSimple(substr(bootPlotDF$pieceID, 1, nchar(bootPlotDF$pieceID)-1))
+bootPlotDF$key <- nameKeysSimple(
+  substr(bootPlotDF$pieceID, 1, nchar(bootPlotDF$pieceID)-1))
 
-bootPlotDF$composer <- as.factor(substr(bootPlotDF$pieceID,
+bootPlotDF$composer <- as.factor(
+  substr(bootPlotDF$pieceID,
        nchar(bootPlotDF$pieceID),
-             nchar(bootPlotDF$pieceID)))
+             nchar(bootPlotDF$pieceID)
+       )
+  )
 
 levels(bootPlotDF$composer) = c('bach', 'chopin')
 
@@ -471,8 +497,8 @@ bootPlotDF$key = prettyKeyCol(bootPlotDF$key)
 ```
 
 ```{r}
-bootPlotDF$sigDifValence = sign(bootPlotDF$changeValenceLCI) == sign(bootPlotDF$changeValenceUCI)
-bootPlotDF$sigDifArousal = sign(bootPlotDF$changeArousalLCI) == sign(bootPlotDF$changeArousalUCI)
+bootPlotDF$sigDifValence <- sign(bootPlotDF$changeValenceLCI) == sign(bootPlotDF$changeValenceUCI)
+bootPlotDF$sigDifArousal <- sign(bootPlotDF$changeArousalLCI) == sign(bootPlotDF$changeArousalUCI)
 summary(bootPlotDF$sigDifArousal)
 summary(bootPlotDF$sigDifValence)
 
@@ -487,16 +513,18 @@ Note: Bach and Chopin wrote G# as key sig in minor keys, but Ab in major keys; C
 ```{r, warning=F, message=FALSE}
 
 # change dimensions for easy visualization
-summaryDat[,!colnames(summaryDat) == 'albumID'] %>% 
-  pivot_wider(names_from = 'condition', values_from = c('valence', 'arousal')) -> wideDat
+wideDat <- summaryDat[,!colnames(summaryDat) == 'albumID'] %>% 
+  tidyr::pivot_wider(names_from = 'condition', 
+              values_from = c('valence', 'arousal')) 
 
 wideDat$mode <- factor(wideDat$key == tolower(wideDat$key))
-levels(wideDat$mode) = c('Major', 'minor')
+levels(wideDat$mode) <- c('Major', 'minor')
 
 
 # show ids where difference is significant
 
-corrSigPlot = data.frame()
+corrSigPlot <- data.frame()
+
 for(thisComposer in c('bach', 'chopin')) {
   # subset by composer
   wideDatSS = subset(wideDat, composer == thisComposer) 
@@ -509,42 +537,50 @@ for(thisComposer in c('bach', 'chopin')) {
   corrSigPlot <- rbind(corrSigPlot, wideDatSS)
 }
 # hide non-significant key signatures for valence and change mode colour to grey
-corrSigPlot$key2 = corrSigPlot$key
-corrSigPlot$key2[!corrSigPlot$labelsValence] = ''
-corrSigPlot$mode2 = corrSigPlot$mode
-levels(corrSigPlot$mode2[!corrSigPlot$labelsValence]) = c('*', '*')
-corrSigPlot$key3 = corrSigPlot$key
-corrSigPlot$key3[!corrSigPlot$labelsArousal] = ''
-corrSigPlot$mode3 = corrSigPlot$mode
-levels(corrSigPlot$mode3[!corrSigPlot$labelsArousal]) = c('*', '*')
+corrSigPlot$key2 <- corrSigPlot$key
+corrSigPlot$key2[!corrSigPlot$labelsValence] <- ''
+corrSigPlot$mode2 <- corrSigPlot$mode
+levels(corrSigPlot$mode2[!corrSigPlot$labelsValence]) <- c('*', '*')
+corrSigPlot$key3 <- corrSigPlot$key
+corrSigPlot$key3[!corrSigPlot$labelsArousal] <- ''
+corrSigPlot$mode3 <- corrSigPlot$mode
+levels(corrSigPlot$mode3[!corrSigPlot$labelsArousal]) <- c('*', '*')
 
 ```
 
 ```{r warning=FALSE, message=FALSE}
 # now plot figures:
-corrSigPlot %>% ggplot(aes(x = valence_deadpan, y = valence_expressive, label = key2, alpha = mode2)) + 
-  geom_smooth(method='lm',linetype = 1,color = 'grey50', se = F, alpha = 0.7)+
-  geom_abline(color = 'grey', linetype = 2)+
-  geom_point(color = 'grey',aes(shape = composer, color = mode2, alpha = mode2))+
-  geom_point(data = subset(corrSigPlot, !is.na(corrSigPlot$mode2)), 
-             aes(shape = composer, color = mode2, alpha = mode2))+
-  geom_text_repel(aes(color = mode2, alpha = mode2), max.overlaps = 12)+
-  # stat_cor(method="pearson", r.digits = 5, p.accuracy =  0.01)+
-  theme_classic()+
-  scale_colour_manual(values = c('firebrick1', 'dodgerblue2'))+
-  scale_alpha_manual(values = c(1,1,0.2))+
-  labs(x='Deadpan Rating',y='Expressive Rating')+
+corrSigPlot %>% 
+  ggplot(aes(x = valence_deadpan, y = valence_expressive, 
+             label = key2, alpha = mode2)
+         ) + 
+  geom_smooth(method='lm',linetype = 1,color = 'grey50', se = F, alpha = 0.7) +
+  geom_abline(color = 'grey', linetype = 2) +
+  geom_point(color = 'grey',
+             aes(shape = composer, color = mode2, alpha = mode2)
+             ) +
+  geom_point(
+    data = subset(corrSigPlot, !is.na(corrSigPlot$mode2)), 
+             aes(shape = composer, color = mode2, alpha = mode2)
+    ) +
+  geom_text_repel(aes(color = mode2, alpha = mode2), max.overlaps = 12) +
+  theme_classic() +
+  scale_colour_manual(values = c('firebrick1', 'dodgerblue2')) +
+  scale_alpha_manual(values = c(1,1,0.2)) +
+  labs(x='Deadpan Rating',y='Expressive Rating') +
   ggtitle('Valence') +
   theme(legend.position = 'none') -> cc1
 
-corrSigPlot %>% ggplot(aes(x = arousal_deadpan, y = arousal_expressive, label = key3,
-                       alpha = mode3)) +  
+corrSigPlot %>% 
+  ggplot(aes(x = arousal_deadpan, y = arousal_expressive,
+             label = key3, alpha = mode3)) +  
   geom_smooth(method='lm',linetype = 1,color = 'grey50', se = F, alpha = 0.7)+
   geom_abline(color = 'grey', linetype = 2)+
   geom_point(color = 'grey', aes(shape = composer, color = mode3, alpha = mode3))+
-  geom_point(data = subset(corrSigPlot, !is.na(corrSigPlot$mode3)), aes(shape = composer, color = mode3, alpha = mode3))+
+  geom_point(data = subset(corrSigPlot, !is.na(corrSigPlot$mode3)), 
+             aes(shape = composer, color = mode3, alpha = mode3)
+             )+
   geom_text_repel(aes(color = mode3, alpha = mode3), max.overlaps = 15, nudge_y = 0.2)+
-  #stat_cor(method="pearson", r.digits = 5, p.accuracy = 0.01)+
   theme_classic()+
   scale_colour_manual(values = c('firebrick1', 'dodgerblue2'))+
   scale_alpha_manual(values = c(1,1,0.2))+
@@ -558,8 +594,17 @@ corrSigPlot %>% ggplot(aes(x = arousal_deadpan, y = arousal_expressive, label = 
 
 ```{r warning=FALSE}
 # layout figures...
-cc1<-cc1+xlim(1,7)+ylim(1,7)+labs(x='Deadpan Rating',y='Expressive Rating')
-cc2<-cc2+xlim(1,100)+ylim(1,100)+labs(x='Deadpan Rating',y='Expressive Rating')
+cc1<-cc1 + 
+  xlim(1,7) +
+  ylim(1,7) +
+  labs(x='Deadpan Rating',
+       y='Expressive Rating')
+
+cc2<- cc2 + 
+  xlim(1,100) + 
+  ylim(1,100) + 
+  labs(x='Deadpan Rating',
+       y='Expressive Rating')
 ```
 
 ```{r warning=FALSE, message=FALSE}

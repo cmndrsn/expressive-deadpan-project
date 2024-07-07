@@ -3154,6 +3154,7 @@ window.Quarto = {
 </section>
 <section id="power-analysis" class="level1">
 <h1>Power Analysis</h1>
+<p>We first performed a power analysis to identify how many participants to include in each experiment.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pwrss<span class="sc">::</span><span class="fu">pwrss.f.reg</span>(<span class="at">r2 =</span> <span class="fl">0.4</span>, <span class="at">k =</span> <span class="dv">3</span>, <span class="at">power =</span> .<span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -3172,17 +3173,18 @@ window.Quarto = {
  Type II error rate = 0.1 </code></pre>
 </div>
 </div>
-<section id="summarize-valence-and-arousal-ratings-by-piece" class="level3">
-<h3 class="anchored" data-anchor-id="summarize-valence-and-arousal-ratings-by-piece">Summarize valence and arousal ratings by piece</h3>
+</section>
+<section id="data-analyses" class="level1">
+<h1>Data Analyses</h1>
+<p>This code prepares a data frame collapsing across participant ratings.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create summary data frame</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fullDat <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(composer, albumID, condition, key) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">arousal =</span> <span class="fu">mean</span>(arousal),</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fullDat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">group_by</span>(composer, albumID, condition, key) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">arousal =</span> <span class="fu">mean</span>(arousal),</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">valence =</span> <span class="fu">mean</span>(valence)) <span class="ot">-&gt;</span> summaryDat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="how-similar-are-ratings" class="level3">
-<h3 class="anchored" data-anchor-id="how-similar-are-ratings">How similar are ratings?</h3>
+<section id="circumplex-plot-fig-1" class="level2">
+<h2 class="anchored" data-anchor-id="circumplex-plot-fig-1">Circumplex plot (Fig 1)</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">=</span> <span class="fu">pairedCircumplex</span>(<span class="fu">subset</span>(fullDat, composer <span class="sc">==</span> <span class="st">&#39;bach&#39;</span>), </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">groupCol =</span> <span class="st">&#39;expID&#39;</span>, <span class="at">chosenLvls =</span> <span class="fu">c</span>(<span class="st">&#39;141&#39;</span>, <span class="st">&#39;142&#39;</span>)) <span class="sc">+</span> </span>
@@ -3194,7 +3196,7 @@ window.Quarto = {
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">get_plot_component</span>(p1, <span class="st">&#39;guide-box-bottom&#39;</span>) <span class="ot">-&gt;</span> circLeg</span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(circLeg, </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>gridExtra<span class="sc">::</span><span class="fu">grid.arrange</span>(circLeg, </span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>             p1 <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&#39;none&#39;</span>), </span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>             p2 <span class="sc">+</span> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&#39;none&#39;</span>),</span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">layout_matrix =</span> circLayout,</span>
@@ -3253,7 +3255,6 @@ alternative hypothesis: true location shift is not equal to 0</code></pre>
 <ul>
 <li>Arousal exhibits significant differences between conditions.</li>
 </ul>
-</section>
 </section>
 <section id="how-do-differences-between-conditions-apply-to-individual-composers" class="level3">
 <h3 class="anchored" data-anchor-id="how-do-differences-between-conditions-apply-to-individual-composers">How do differences between conditions apply to individual composers?</h3>
@@ -3351,20 +3352,22 @@ d(x, y) = \frac{|x-y|}{[\frac{(x+y)}{2}]}*100,
 <p>where <span class="math inline">\(x\)</span> represents ratings in the expressive condition averaged by piece and <span class="math inline">\(y\)</span> represents ratings in the deadpan condition averaged by piece.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># first calculate averaged values per piece in each condition</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>expressive <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(composer, key) <span class="sc">%&gt;%</span> </span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">valence =</span> <span class="fu">mean</span>(valence),</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">arousal =</span> <span class="fu">mean</span>(arousal),</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">arPerf =</span> <span class="fu">mean</span>(arPerf),</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">pitchHeight =</span> <span class="fu">mean</span>(pitchHeight),</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">rms =</span> <span class="fu">mean</span>(rms),</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">mode =</span> <span class="fu">unique</span>(mode)) <span class="ot">-&gt;</span> expressiveRatingsAvg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>expressive <span class="sc">%&gt;%</span> </span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(composer, key) <span class="sc">%&gt;%</span> </span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">valence =</span> <span class="fu">mean</span>(valence),</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">arousal =</span> <span class="fu">mean</span>(arousal),</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">arPerf =</span> <span class="fu">mean</span>(arPerf),</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">pitchHeight =</span> <span class="fu">mean</span>(pitchHeight),</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">rms =</span> <span class="fu">mean</span>(rms),</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">mode =</span> <span class="fu">unique</span>(mode)) <span class="ot">-&gt;</span> expressiveRatingsAvg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`summarise()` has grouped output by &#39;composer&#39;. You can override using the
 `.groups` argument.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>deadpan <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(composer, key) <span class="sc">%&gt;%</span> </span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">valence =</span> <span class="fu">mean</span>(valence),</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">arousal =</span> <span class="fu">mean</span>(arousal)) <span class="ot">-&gt;</span> deadpanRatingsAvg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>deadpan <span class="sc">%&gt;%</span> </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(composer, key) <span class="sc">%&gt;%</span> </span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">valence =</span> <span class="fu">mean</span>(valence),</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">arousal =</span> <span class="fu">mean</span>(arousal)) <span class="ot">-&gt;</span> deadpanRatingsAvg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`summarise()` has grouped output by &#39;composer&#39;. You can override using the
 `.groups` argument.</code></pre>
@@ -3392,11 +3395,13 @@ d(x, y) = \frac{|x-y|}{[\frac{(x+y)}{2}]}*100,
 <div class="cell">
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># overall correlations</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(<span class="fu">subset</span>(summaryDat, condition <span class="sc">==</span> <span class="st">&#39;expressive&#39;</span>)<span class="sc">$</span>valence, <span class="fu">subset</span>(summaryDat, condition <span class="sc">==</span> <span class="st">&#39;deadpan&#39;</span>)<span class="sc">$</span>valence) <span class="ot">-&gt;</span> t1</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(<span class="fu">subset</span>(summaryDat, condition <span class="sc">==</span> <span class="st">&#39;expressive&#39;</span>)<span class="sc">$</span>arousal, <span class="fu">subset</span>(summaryDat, condition <span class="sc">==</span> <span class="st">&#39;deadpan&#39;</span>)<span class="sc">$</span>arousal) <span class="ot">-&gt;</span> t2</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(<span class="fu">subset</span>(summaryDat, condition <span class="sc">==</span> <span class="st">&#39;expressive&#39;</span>)<span class="sc">$</span>valence, </span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">subset</span>(summaryDat, condition <span class="sc">==</span> <span class="st">&#39;deadpan&#39;</span>)<span class="sc">$</span>valence) <span class="ot">-&gt;</span> t1</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(<span class="fu">subset</span>(summaryDat, condition <span class="sc">==</span> <span class="st">&#39;expressive&#39;</span>)<span class="sc">$</span>arousal, </span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>         <span class="fu">subset</span>(summaryDat, condition <span class="sc">==</span> <span class="st">&#39;deadpan&#39;</span>)<span class="sc">$</span>arousal) <span class="ot">-&gt;</span> t2</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Pearson&#39;s product-moment correlation
@@ -3432,10 +3437,12 @@ sample estimates:
 </div>
 <p><strong>Do they differ between major and minor modes?</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(mode) <span class="sc">%&gt;%</span> </span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">meanValenceDiff =</span> <span class="fu">mean</span>(valenceDiff), </span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">sdValenceDiff=</span><span class="fu">sd</span>(valenceDiff), </span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">meanArousalDiff =</span> <span class="fu">mean</span>(arousalDiff), <span class="at">sdArousalDiff=</span><span class="fu">sd</span>(arousalDiff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg <span class="sc">%&gt;%</span> </span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(mode) <span class="sc">%&gt;%</span> </span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">meanValenceDiff =</span> <span class="fu">mean</span>(valenceDiff), </span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">sdValenceDiff=</span><span class="fu">sd</span>(valenceDiff), </span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">meanArousalDiff =</span> <span class="fu">mean</span>(arousalDiff), </span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">sdArousalDiff=</span><span class="fu">sd</span>(arousalDiff))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 5
   mode  meanValenceDiff sdValenceDiff meanArousalDiff sdArousalDiff
@@ -3476,12 +3483,12 @@ alternative hypothesis: true location shift is not equal to 0</code></pre>
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(t1, t2)</span>
 <span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcoxonR</span>(<span class="at">x=</span>expressiveRatingsAvg<span class="sc">$</span>valence,</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>rcompanion<span class="sc">::</span><span class="fu">wilcoxonR</span>(<span class="at">x=</span>expressiveRatingsAvg<span class="sc">$</span>valence,</span>
 <span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">g=</span>expressiveRatingsAvg<span class="sc">$</span>mode, <span class="at">ci =</span> T) <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.794 0.687 0.844</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcoxonR</span>(<span class="at">x=</span>expressiveRatingsAvg<span class="sc">$</span>arousal,</span>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>rcompanion<span class="sc">::</span><span class="fu">wilcoxonR</span>(<span class="at">x=</span>expressiveRatingsAvg<span class="sc">$</span>arousal,</span>
 <span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">g=</span>expressiveRatingsAvg<span class="sc">$</span>mode, <span class="at">ci =</span> T) <span class="sc">|&gt;</span> <span class="fu">as.numeric</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] -0.0179 -0.3230  0.2680</code></pre>
@@ -3767,6 +3774,7 @@ sample estimates:
 </div>
 </section>
 </section>
+</section>
 <section id="beta-regression" class="level2">
 <h2 class="anchored" data-anchor-id="beta-regression"><strong>Beta Regression</strong></h2>
 <p>Perform beta regression to assess significance of differences while dealing with positive (0,1) data:</p>
@@ -3778,29 +3786,31 @@ sample estimates:
 <span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a><span class="co"># center values of attack rate, rms, pitch height</span></span>
 <span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb94-6"><a href="#cb94-6" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg2 <span class="ot">=</span> expressiveRatingsAvg</span>
+<span id="cb94-6"><a href="#cb94-6" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg2 <span class="ot">&lt;-</span> expressiveRatingsAvg</span>
 <span id="cb94-7"><a href="#cb94-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb94-8"><a href="#cb94-8" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg2<span class="sc">$</span>arPerf <span class="ot">=</span> expressiveRatingsAvg<span class="sc">$</span>arPerf <span class="sc">-</span> <span class="fu">mean</span>(expressiveRatingsAvg<span class="sc">$</span>arPerf)</span>
-<span id="cb94-9"><a href="#cb94-9" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg2<span class="sc">$</span>pitchHeight <span class="ot">=</span> expressiveRatingsAvg<span class="sc">$</span>pitchHeight <span class="sc">-</span> <span class="fu">mean</span>(expressiveRatingsAvg<span class="sc">$</span>pitchHeight)</span>
-<span id="cb94-10"><a href="#cb94-10" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg2<span class="sc">$</span>rms <span class="ot">=</span> expressiveRatingsAvg<span class="sc">$</span>rms <span class="sc">-</span> <span class="fu">mean</span>(expressiveRatingsAvg<span class="sc">$</span>rms)</span>
-<span id="cb94-11"><a href="#cb94-11" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg2<span class="sc">$</span>mode <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(expressiveRatingsAvg<span class="sc">$</span>mode)) <span class="sc">-</span> <span class="fl">1.5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb94-8"><a href="#cb94-8" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg2<span class="sc">$</span>arPerf <span class="ot">&lt;-</span> expressiveRatingsAvg<span class="sc">$</span>arPerf <span class="sc">-</span> <span class="fu">mean</span>(expressiveRatingsAvg<span class="sc">$</span>arPerf)</span>
+<span id="cb94-9"><a href="#cb94-9" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg2<span class="sc">$</span>pitchHeight <span class="ot">&lt;-</span> expressiveRatingsAvg<span class="sc">$</span>pitchHeight <span class="sc">-</span> <span class="fu">mean</span>(expressiveRatingsAvg<span class="sc">$</span>pitchHeight)</span>
+<span id="cb94-10"><a href="#cb94-10" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg2<span class="sc">$</span>rms <span class="ot">&lt;-</span> expressiveRatingsAvg<span class="sc">$</span>rms <span class="sc">-</span> <span class="fu">mean</span>(expressiveRatingsAvg<span class="sc">$</span>rms)</span>
+<span id="cb94-11"><a href="#cb94-11" aria-hidden="true" tabindex="-1"></a>expressiveRatingsAvg2<span class="sc">$</span>mode <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(expressiveRatingsAvg<span class="sc">$</span>mode)) <span class="sc">-</span> <span class="fl">1.5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
 <span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>bregAro <span class="ot">=</span> <span class="fu">betareg</span>(arousalDiffB <span class="sc">~</span> arPerf <span class="sc">+</span> rms <span class="sc">+</span> </span>
-<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a>          pitchHeight <span class="sc">+</span> mode, <span class="at">data =</span> expressiveRatingsAvg2)</span>
-<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a>bregVal <span class="ot">=</span> <span class="fu">betareg</span>(valenceDiffB <span class="sc">~</span> arPerf <span class="sc">+</span> rms <span class="sc">+</span> </span>
-<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a>      pitchHeight <span class="sc">+</span> mode <span class="sc">+</span> (arPerf<span class="sc">*</span>mode) <span class="sc">+</span></span>
-<span id="cb95-7"><a href="#cb95-7" aria-hidden="true" tabindex="-1"></a>      (rms<span class="sc">*</span>mode) <span class="sc">+</span> (pitchHeight<span class="sc">*</span>mode), </span>
-<span id="cb95-8"><a href="#cb95-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> expressiveRatingsAvg2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>bregAro <span class="ot">=</span> betareg<span class="sc">::</span><span class="fu">betareg</span>(</span>
+<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a>  arousalDiffB <span class="sc">~</span> arPerf <span class="sc">+</span> rms <span class="sc">+</span> pitchHeight <span class="sc">+</span> mode, </span>
+<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> expressiveRatingsAvg2)</span>
+<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a>bregVal <span class="ot">=</span> betareg<span class="sc">::</span><span class="fu">betareg</span>(</span>
+<span id="cb95-7"><a href="#cb95-7" aria-hidden="true" tabindex="-1"></a>  valenceDiffB <span class="sc">~</span> arPerf <span class="sc">+</span> rms <span class="sc">+</span> pitchHeight <span class="sc">+</span> mode <span class="sc">+</span> (arPerf<span class="sc">*</span>mode) <span class="sc">+</span></span>
+<span id="cb95-8"><a href="#cb95-8" aria-hidden="true" tabindex="-1"></a>      (rms<span class="sc">*</span>mode) <span class="sc">+</span> (pitchHeight<span class="sc">*</span>mode), </span>
+<span id="cb95-9"><a href="#cb95-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> expressiveRatingsAvg2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bregAro)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-betareg(formula = arousalDiffB ~ arPerf + rms + pitchHeight + mode, data = expressiveRatingsAvg2)
+betareg::betareg(formula = arousalDiffB ~ arPerf + rms + pitchHeight + 
+    mode, data = expressiveRatingsAvg2)
 
 Standardized weighted residuals 2:
     Min      1Q  Median      3Q     Max 
@@ -3829,8 +3839,8 @@ Number of iterations: 15 (BFGS) + 4 (Fisher scoring) </code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-betareg(formula = valenceDiffB ~ arPerf + rms + pitchHeight + mode + 
-    (arPerf * mode) + (rms * mode) + (pitchHeight * mode), data = expressiveRatingsAvg2)
+betareg::betareg(formula = valenceDiffB ~ arPerf + rms + pitchHeight + 
+    mode + (arPerf * mode) + (rms * mode) + (pitchHeight * mode), data = expressiveRatingsAvg2)
 
 Standardized weighted residuals 2:
     Min      1Q  Median      3Q     Max 
@@ -3884,7 +3894,7 @@ Number of iterations: 20 (BFGS) + 2 (Fisher scoring) </code></pre>
 <section id="coefficients-of-variation" class="level1">
 <h1>Coefficients of Variation</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>expressCVSig <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
 <span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">c</span>(<span class="st">&#39;Expressive&#39;</span>, <span class="st">&#39;Deadpan&#39;</span>),</span>
 <span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">meanCVVal =</span> <span class="fu">c</span>(<span class="fu">mean</span>(bootData<span class="sc">$</span>valenceA_cv), <span class="fu">mean</span>(bootData<span class="sc">$</span>valenceB_cv)),</span>
 <span id="cb101-4"><a href="#cb101-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">lciCVVal =</span> <span class="fu">c</span>(<span class="fu">quantile</span>(bootData<span class="sc">$</span>valenceA_cv, <span class="fu">c</span>(<span class="fl">0.025</span>)),</span>
@@ -3896,19 +3906,28 @@ Number of iterations: 20 (BFGS) + 2 (Fisher scoring) </code></pre>
 <span id="cb101-10"><a href="#cb101-10" aria-hidden="true" tabindex="-1"></a>               <span class="fu">quantile</span>(bootData<span class="sc">$</span>arousalB_cv, <span class="fu">c</span>(<span class="fl">0.025</span>))),</span>
 <span id="cb101-11"><a href="#cb101-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">uciCVAro =</span> <span class="fu">c</span>(<span class="fu">quantile</span>(bootData<span class="sc">$</span>arousalA_cv, <span class="fu">c</span>(<span class="fl">0.975</span>)),</span>
 <span id="cb101-12"><a href="#cb101-12" aria-hidden="true" tabindex="-1"></a>               <span class="fu">quantile</span>(bootData<span class="sc">$</span>arousalB_cv, <span class="fu">c</span>(<span class="fl">0.975</span>)))</span>
-<span id="cb101-13"><a href="#cb101-13" aria-hidden="true" tabindex="-1"></a>) <span class="ot">-&gt;</span> expressCVSig</span>
+<span id="cb101-13"><a href="#cb101-13" aria-hidden="true" tabindex="-1"></a>) </span>
 <span id="cb101-14"><a href="#cb101-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb101-15"><a href="#cb101-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(expressCVSig, <span class="fu">aes</span>(<span class="at">x =</span> group, <span class="at">y =</span> meanCVVal<span class="sc">*</span><span class="dv">100</span>,</span>
-<span id="cb101-16"><a href="#cb101-16" aria-hidden="true" tabindex="-1"></a>                         <span class="at">ymin =</span> lciCVVal<span class="sc">*</span><span class="dv">100</span>, <span class="at">ymax =</span> uciCVVal<span class="sc">*</span><span class="dv">100</span>))<span class="sc">+</span></span>
-<span id="cb101-17"><a href="#cb101-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span> <span class="fu">geom_errorbar</span>()<span class="sc">+</span><span class="fu">ylim</span>(<span class="dv">20</span>, <span class="dv">50</span>)<span class="sc">+</span><span class="fu">theme_classic</span>()<span class="sc">+</span></span>
-<span id="cb101-18"><a href="#cb101-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&#39;Coefficient of Variation (%)&#39;</span>, <span class="at">x =</span> <span class="st">&#39;Condition&#39;</span>, <span class="at">subtitle=</span><span class="st">&#39;Valence&#39;</span>)<span class="sc">+</span></span>
-<span id="cb101-19"><a href="#cb101-19" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(expressCVSig, <span class="fu">aes</span>(<span class="at">x =</span> group, <span class="at">y =</span> meanCVAro<span class="sc">*</span><span class="dv">100</span>,</span>
-<span id="cb101-20"><a href="#cb101-20" aria-hidden="true" tabindex="-1"></a>                         <span class="at">ymin =</span> lciCVAro<span class="sc">*</span><span class="dv">100</span>, <span class="at">ymax =</span> uciCVAro<span class="sc">*</span><span class="dv">100</span>))<span class="sc">+</span></span>
-<span id="cb101-21"><a href="#cb101-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span> <span class="fu">geom_errorbar</span>()<span class="sc">+</span><span class="fu">ylim</span>(<span class="dv">20</span>,<span class="dv">50</span>)<span class="sc">+</span><span class="fu">theme_classic</span>()<span class="sc">+</span></span>
-<span id="cb101-22"><a href="#cb101-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&#39;&#39;</span>, <span class="at">x =</span> <span class="st">&#39;Condition&#39;</span>, <span class="at">subtitle=</span><span class="st">&#39;Arousal&#39;</span>)<span class="sc">+</span></span>
-<span id="cb101-23"><a href="#cb101-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb101-24"><a href="#cb101-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb101-25"><a href="#cb101-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line.y =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb101-16"><a href="#cb101-16" aria-hidden="true" tabindex="-1"></a>                         <span class="at">ymin =</span> lciCVVal<span class="sc">*</span><span class="dv">100</span>, <span class="at">ymax =</span> uciCVVal<span class="sc">*</span><span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb101-17"><a href="#cb101-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb101-18"><a href="#cb101-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>() <span class="sc">+</span> </span>
+<span id="cb101-19"><a href="#cb101-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">20</span>, <span class="dv">50</span>) <span class="sc">+</span> </span>
+<span id="cb101-20"><a href="#cb101-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()<span class="sc">+</span></span>
+<span id="cb101-21"><a href="#cb101-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&#39;Coefficient of Variation (%)&#39;</span>, </span>
+<span id="cb101-22"><a href="#cb101-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&#39;Condition&#39;</span>, <span class="at">subtitle=</span><span class="st">&#39;Valence&#39;</span>) <span class="sc">+</span></span>
+<span id="cb101-23"><a href="#cb101-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb101-24"><a href="#cb101-24" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(expressCVSig, </span>
+<span id="cb101-25"><a href="#cb101-25" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> group, </span>
+<span id="cb101-26"><a href="#cb101-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> meanCVAro<span class="sc">*</span><span class="dv">100</span>,</span>
+<span id="cb101-27"><a href="#cb101-27" aria-hidden="true" tabindex="-1"></a>          <span class="at">ymin =</span> lciCVAro<span class="sc">*</span><span class="dv">100</span>, </span>
+<span id="cb101-28"><a href="#cb101-28" aria-hidden="true" tabindex="-1"></a>          <span class="at">ymax =</span> uciCVAro<span class="sc">*</span><span class="dv">100</span>))<span class="sc">+</span></span>
+<span id="cb101-29"><a href="#cb101-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span> <span class="fu">geom_errorbar</span>()<span class="sc">+</span><span class="fu">ylim</span>(<span class="dv">20</span>,<span class="dv">50</span>) <span class="sc">+</span></span>
+<span id="cb101-30"><a href="#cb101-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb101-31"><a href="#cb101-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&#39;&#39;</span>, <span class="at">x =</span> <span class="st">&#39;Condition&#39;</span>, <span class="at">subtitle=</span><span class="st">&#39;Arousal&#39;</span>) <span class="sc">+</span></span>
+<span id="cb101-32"><a href="#cb101-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb101-33"><a href="#cb101-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb101-34"><a href="#cb101-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.line.y =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -3919,9 +3938,11 @@ Number of iterations: 20 (BFGS) + 2 (Fisher scoring) </code></pre>
 <div class="sourceCode cell-code" id="cb102"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true" tabindex="-1"></a> <span class="co">#ggsave(filename = paste0(&#39;Figures/Fig 4-&#39;, Sys.Date(), &#39;.png&#39;))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(expressCVSig[,<span class="dv">2</span><span class="sc">:</span><span class="fu">ncol</span>(expressCVSig)],<span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">round</span>(<span class="fu">as.numeric</span>(x)<span class="sc">*</span><span class="dv">100</span>, <span class="dv">4</span>)) <span class="ot">-&gt;</span> expressCVSig[,<span class="dv">2</span><span class="sc">:</span><span class="fu">ncol</span>(expressCVSig)]</span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>expressCVSig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a>expressCVSig[,<span class="dv">2</span><span class="sc">:</span><span class="fu">ncol</span>(expressCVSig)] <span class="ot">&lt;-</span> <span class="fu">apply</span>(</span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>  expressCVSig[,<span class="dv">2</span><span class="sc">:</span><span class="fu">ncol</span>(expressCVSig)],<span class="dv">2</span>, </span>
+<span id="cb103-3"><a href="#cb103-3" aria-hidden="true" tabindex="-1"></a>      <span class="cf">function</span>(x) <span class="fu">round</span>(<span class="fu">as.numeric</span>(x)<span class="sc">*</span><span class="dv">100</span>, <span class="dv">4</span>)) </span>
+<span id="cb103-4"><a href="#cb103-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb103-5"><a href="#cb103-5" aria-hidden="true" tabindex="-1"></a>expressCVSig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       group meanCVVal lciCVVal uciCVVal meanCVAro lciCVAro uciCVAro
 1 Expressive   29.2690  27.9298  30.6597   43.1718  41.6171  44.7738
@@ -3932,27 +3953,31 @@ Number of iterations: 20 (BFGS) + 2 (Fisher scoring) </code></pre>
 <section id="plot-differences" class="level1">
 <h1>Plot differences</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>key <span class="ot">&lt;-</span> <span class="fu">nameKeysSimple</span>(<span class="fu">substr</span>(bootPlotDF<span class="sc">$</span>pieceID, <span class="dv">1</span>, <span class="fu">nchar</span>(bootPlotDF<span class="sc">$</span>pieceID)<span class="sc">-</span><span class="dv">1</span>))</span>
-<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>composer <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">substr</span>(bootPlotDF<span class="sc">$</span>pieceID,</span>
-<span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a>       <span class="fu">nchar</span>(bootPlotDF<span class="sc">$</span>pieceID),</span>
-<span id="cb105-5"><a href="#cb105-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">nchar</span>(bootPlotDF<span class="sc">$</span>pieceID)))</span>
-<span id="cb105-6"><a href="#cb105-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb105-7"><a href="#cb105-7" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(bootPlotDF<span class="sc">$</span>composer) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&#39;bach&#39;</span>, <span class="st">&#39;chopin&#39;</span>)</span>
-<span id="cb105-8"><a href="#cb105-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb105-9"><a href="#cb105-9" aria-hidden="true" tabindex="-1"></a><span class="co"># temporarily change key back to a character vector to replace c# value with db</span></span>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>key <span class="ot">&lt;-</span> <span class="fu">nameKeysSimple</span>(</span>
+<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">substr</span>(bootPlotDF<span class="sc">$</span>pieceID, <span class="dv">1</span>, <span class="fu">nchar</span>(bootPlotDF<span class="sc">$</span>pieceID)<span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>composer <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(</span>
+<span id="cb105-5"><a href="#cb105-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">substr</span>(bootPlotDF<span class="sc">$</span>pieceID,</span>
+<span id="cb105-6"><a href="#cb105-6" aria-hidden="true" tabindex="-1"></a>       <span class="fu">nchar</span>(bootPlotDF<span class="sc">$</span>pieceID),</span>
+<span id="cb105-7"><a href="#cb105-7" aria-hidden="true" tabindex="-1"></a>             <span class="fu">nchar</span>(bootPlotDF<span class="sc">$</span>pieceID)</span>
+<span id="cb105-8"><a href="#cb105-8" aria-hidden="true" tabindex="-1"></a>       )</span>
+<span id="cb105-9"><a href="#cb105-9" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb105-10"><a href="#cb105-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb105-11"><a href="#cb105-11" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>key <span class="ot">=</span> <span class="fu">as.character</span>(bootPlotDF<span class="sc">$</span>key)</span>
-<span id="cb105-12"><a href="#cb105-12" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>key[bootPlotDF<span class="sc">$</span>composer <span class="sc">==</span> <span class="st">&#39;chopin&#39;</span> <span class="sc">&amp;</span> </span>
-<span id="cb105-13"><a href="#cb105-13" aria-hidden="true" tabindex="-1"></a>             bootPlotDF<span class="sc">$</span>key <span class="sc">==</span> <span class="st">&#39;C#&#39;</span>] <span class="ot">&lt;-</span> <span class="st">&#39;Db&#39;</span></span>
-<span id="cb105-14"><a href="#cb105-14" aria-hidden="true" tabindex="-1"></a><span class="co"># now convert back to factor</span></span>
-<span id="cb105-15"><a href="#cb105-15" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>key <span class="ot">=</span> <span class="fu">as.factor</span>(bootPlotDF<span class="sc">$</span>key)</span>
-<span id="cb105-16"><a href="#cb105-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb105-17"><a href="#cb105-17" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>key <span class="ot">=</span> <span class="fu">prettyKeyCol</span>(bootPlotDF<span class="sc">$</span>key)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb105-11"><a href="#cb105-11" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(bootPlotDF<span class="sc">$</span>composer) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&#39;bach&#39;</span>, <span class="st">&#39;chopin&#39;</span>)</span>
+<span id="cb105-12"><a href="#cb105-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-13"><a href="#cb105-13" aria-hidden="true" tabindex="-1"></a><span class="co"># temporarily change key back to a character vector to replace c# value with db</span></span>
+<span id="cb105-14"><a href="#cb105-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-15"><a href="#cb105-15" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>key <span class="ot">=</span> <span class="fu">as.character</span>(bootPlotDF<span class="sc">$</span>key)</span>
+<span id="cb105-16"><a href="#cb105-16" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>key[bootPlotDF<span class="sc">$</span>composer <span class="sc">==</span> <span class="st">&#39;chopin&#39;</span> <span class="sc">&amp;</span> </span>
+<span id="cb105-17"><a href="#cb105-17" aria-hidden="true" tabindex="-1"></a>             bootPlotDF<span class="sc">$</span>key <span class="sc">==</span> <span class="st">&#39;C#&#39;</span>] <span class="ot">&lt;-</span> <span class="st">&#39;Db&#39;</span></span>
+<span id="cb105-18"><a href="#cb105-18" aria-hidden="true" tabindex="-1"></a><span class="co"># now convert back to factor</span></span>
+<span id="cb105-19"><a href="#cb105-19" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>key <span class="ot">=</span> <span class="fu">as.factor</span>(bootPlotDF<span class="sc">$</span>key)</span>
+<span id="cb105-20"><a href="#cb105-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-21"><a href="#cb105-21" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>key <span class="ot">=</span> <span class="fu">prettyKeyCol</span>(bootPlotDF<span class="sc">$</span>key)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>sigDifValence <span class="ot">=</span> <span class="fu">sign</span>(bootPlotDF<span class="sc">$</span>changeValenceLCI) <span class="sc">==</span> <span class="fu">sign</span>(bootPlotDF<span class="sc">$</span>changeValenceUCI)</span>
-<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>sigDifArousal <span class="ot">=</span> <span class="fu">sign</span>(bootPlotDF<span class="sc">$</span>changeArousalLCI) <span class="sc">==</span> <span class="fu">sign</span>(bootPlotDF<span class="sc">$</span>changeArousalUCI)</span>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>sigDifValence <span class="ot">&lt;-</span> <span class="fu">sign</span>(bootPlotDF<span class="sc">$</span>changeValenceLCI) <span class="sc">==</span> <span class="fu">sign</span>(bootPlotDF<span class="sc">$</span>changeValenceUCI)</span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a>bootPlotDF<span class="sc">$</span>sigDifArousal <span class="ot">&lt;-</span> <span class="fu">sign</span>(bootPlotDF<span class="sc">$</span>changeArousalLCI) <span class="sc">==</span> <span class="fu">sign</span>(bootPlotDF<span class="sc">$</span>changeArousalUCI)</span>
 <span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(bootPlotDF<span class="sc">$</span>sigDifArousal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   Mode   FALSE    TRUE 
@@ -3971,74 +3996,93 @@ logical      45       3 </code></pre>
 <p>Note: Bach and Chopin wrote G# as key sig in minor keys, but Ab in major keys; Chopin wrote in Db minor.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="co"># change dimensions for easy visualization</span></span>
-<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>summaryDat[,<span class="sc">!</span><span class="fu">colnames</span>(summaryDat) <span class="sc">==</span> <span class="st">&#39;albumID&#39;</span>] <span class="sc">%&gt;%</span> </span>
-<span id="cb110-3"><a href="#cb110-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&#39;condition&#39;</span>, <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&#39;valence&#39;</span>, <span class="st">&#39;arousal&#39;</span>)) <span class="ot">-&gt;</span> wideDat</span>
-<span id="cb110-4"><a href="#cb110-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb110-5"><a href="#cb110-5" aria-hidden="true" tabindex="-1"></a>wideDat<span class="sc">$</span>mode <span class="ot">&lt;-</span> <span class="fu">factor</span>(wideDat<span class="sc">$</span>key <span class="sc">==</span> <span class="fu">tolower</span>(wideDat<span class="sc">$</span>key))</span>
-<span id="cb110-6"><a href="#cb110-6" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(wideDat<span class="sc">$</span>mode) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&#39;Major&#39;</span>, <span class="st">&#39;minor&#39;</span>)</span>
-<span id="cb110-7"><a href="#cb110-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb110-2"><a href="#cb110-2" aria-hidden="true" tabindex="-1"></a>wideDat <span class="ot">&lt;-</span> summaryDat[,<span class="sc">!</span><span class="fu">colnames</span>(summaryDat) <span class="sc">==</span> <span class="st">&#39;albumID&#39;</span>] <span class="sc">%&gt;%</span> </span>
+<span id="cb110-3"><a href="#cb110-3" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="st">&#39;condition&#39;</span>, </span>
+<span id="cb110-4"><a href="#cb110-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">values_from =</span> <span class="fu">c</span>(<span class="st">&#39;valence&#39;</span>, <span class="st">&#39;arousal&#39;</span>)) </span>
+<span id="cb110-5"><a href="#cb110-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb110-6"><a href="#cb110-6" aria-hidden="true" tabindex="-1"></a>wideDat<span class="sc">$</span>mode <span class="ot">&lt;-</span> <span class="fu">factor</span>(wideDat<span class="sc">$</span>key <span class="sc">==</span> <span class="fu">tolower</span>(wideDat<span class="sc">$</span>key))</span>
+<span id="cb110-7"><a href="#cb110-7" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(wideDat<span class="sc">$</span>mode) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;Major&#39;</span>, <span class="st">&#39;minor&#39;</span>)</span>
 <span id="cb110-8"><a href="#cb110-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb110-9"><a href="#cb110-9" aria-hidden="true" tabindex="-1"></a><span class="co"># show ids where difference is significant</span></span>
-<span id="cb110-10"><a href="#cb110-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb110-11"><a href="#cb110-11" aria-hidden="true" tabindex="-1"></a>corrSigPlot <span class="ot">=</span> <span class="fu">data.frame</span>()</span>
-<span id="cb110-12"><a href="#cb110-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(thisComposer <span class="cf">in</span> <span class="fu">c</span>(<span class="st">&#39;bach&#39;</span>, <span class="st">&#39;chopin&#39;</span>)) {</span>
-<span id="cb110-13"><a href="#cb110-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># subset by composer</span></span>
-<span id="cb110-14"><a href="#cb110-14" aria-hidden="true" tabindex="-1"></a>  wideDatSS <span class="ot">=</span> <span class="fu">subset</span>(wideDat, composer <span class="sc">==</span> thisComposer) </span>
-<span id="cb110-15"><a href="#cb110-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># subset bootstrap simulations</span></span>
-<span id="cb110-16"><a href="#cb110-16" aria-hidden="true" tabindex="-1"></a>  bootPlotSS <span class="ot">=</span> <span class="fu">subset</span>(bootPlotDF, composer <span class="sc">==</span> thisComposer)</span>
-<span id="cb110-17"><a href="#cb110-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># check which keys yield sig difference in bootplot</span></span>
-<span id="cb110-18"><a href="#cb110-18" aria-hidden="true" tabindex="-1"></a>  wideDatSS<span class="sc">$</span>labelsValence <span class="ot">=</span> wideDatSS<span class="sc">$</span>key <span class="sc">%in%</span> bootPlotSS<span class="sc">$</span>key[bootPlotSS<span class="sc">$</span>sigDifValence <span class="sc">==</span> T]</span>
-<span id="cb110-19"><a href="#cb110-19" aria-hidden="true" tabindex="-1"></a>  wideDatSS<span class="sc">$</span>labelsArousal <span class="ot">=</span> wideDatSS<span class="sc">$</span>key <span class="sc">%in%</span> bootPlotSS<span class="sc">$</span>key[bootPlotSS<span class="sc">$</span>sigDifArousal <span class="sc">==</span> T]</span>
-<span id="cb110-20"><a href="#cb110-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># bind to data frame</span></span>
-<span id="cb110-21"><a href="#cb110-21" aria-hidden="true" tabindex="-1"></a>  corrSigPlot <span class="ot">&lt;-</span> <span class="fu">rbind</span>(corrSigPlot, wideDatSS)</span>
-<span id="cb110-22"><a href="#cb110-22" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb110-23"><a href="#cb110-23" aria-hidden="true" tabindex="-1"></a><span class="co"># hide non-significant key signatures for valence and change mode colour to grey</span></span>
-<span id="cb110-24"><a href="#cb110-24" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>key2 <span class="ot">=</span> corrSigPlot<span class="sc">$</span>key</span>
-<span id="cb110-25"><a href="#cb110-25" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>key2[<span class="sc">!</span>corrSigPlot<span class="sc">$</span>labelsValence] <span class="ot">=</span> <span class="st">&#39;&#39;</span></span>
-<span id="cb110-26"><a href="#cb110-26" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>mode2 <span class="ot">=</span> corrSigPlot<span class="sc">$</span>mode</span>
-<span id="cb110-27"><a href="#cb110-27" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(corrSigPlot<span class="sc">$</span>mode2[<span class="sc">!</span>corrSigPlot<span class="sc">$</span>labelsValence]) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&#39;*&#39;</span>, <span class="st">&#39;*&#39;</span>)</span>
-<span id="cb110-28"><a href="#cb110-28" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>key3 <span class="ot">=</span> corrSigPlot<span class="sc">$</span>key</span>
-<span id="cb110-29"><a href="#cb110-29" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>key3[<span class="sc">!</span>corrSigPlot<span class="sc">$</span>labelsArousal] <span class="ot">=</span> <span class="st">&#39;&#39;</span></span>
-<span id="cb110-30"><a href="#cb110-30" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>mode3 <span class="ot">=</span> corrSigPlot<span class="sc">$</span>mode</span>
-<span id="cb110-31"><a href="#cb110-31" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(corrSigPlot<span class="sc">$</span>mode3[<span class="sc">!</span>corrSigPlot<span class="sc">$</span>labelsArousal]) <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&#39;*&#39;</span>, <span class="st">&#39;*&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb110-9"><a href="#cb110-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb110-10"><a href="#cb110-10" aria-hidden="true" tabindex="-1"></a><span class="co"># show ids where difference is significant</span></span>
+<span id="cb110-11"><a href="#cb110-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb110-12"><a href="#cb110-12" aria-hidden="true" tabindex="-1"></a>corrSigPlot <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb110-13"><a href="#cb110-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb110-14"><a href="#cb110-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(thisComposer <span class="cf">in</span> <span class="fu">c</span>(<span class="st">&#39;bach&#39;</span>, <span class="st">&#39;chopin&#39;</span>)) {</span>
+<span id="cb110-15"><a href="#cb110-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># subset by composer</span></span>
+<span id="cb110-16"><a href="#cb110-16" aria-hidden="true" tabindex="-1"></a>  wideDatSS <span class="ot">=</span> <span class="fu">subset</span>(wideDat, composer <span class="sc">==</span> thisComposer) </span>
+<span id="cb110-17"><a href="#cb110-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># subset bootstrap simulations</span></span>
+<span id="cb110-18"><a href="#cb110-18" aria-hidden="true" tabindex="-1"></a>  bootPlotSS <span class="ot">=</span> <span class="fu">subset</span>(bootPlotDF, composer <span class="sc">==</span> thisComposer)</span>
+<span id="cb110-19"><a href="#cb110-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># check which keys yield sig difference in bootplot</span></span>
+<span id="cb110-20"><a href="#cb110-20" aria-hidden="true" tabindex="-1"></a>  wideDatSS<span class="sc">$</span>labelsValence <span class="ot">=</span> wideDatSS<span class="sc">$</span>key <span class="sc">%in%</span> bootPlotSS<span class="sc">$</span>key[bootPlotSS<span class="sc">$</span>sigDifValence <span class="sc">==</span> T]</span>
+<span id="cb110-21"><a href="#cb110-21" aria-hidden="true" tabindex="-1"></a>  wideDatSS<span class="sc">$</span>labelsArousal <span class="ot">=</span> wideDatSS<span class="sc">$</span>key <span class="sc">%in%</span> bootPlotSS<span class="sc">$</span>key[bootPlotSS<span class="sc">$</span>sigDifArousal <span class="sc">==</span> T]</span>
+<span id="cb110-22"><a href="#cb110-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># bind to data frame</span></span>
+<span id="cb110-23"><a href="#cb110-23" aria-hidden="true" tabindex="-1"></a>  corrSigPlot <span class="ot">&lt;-</span> <span class="fu">rbind</span>(corrSigPlot, wideDatSS)</span>
+<span id="cb110-24"><a href="#cb110-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb110-25"><a href="#cb110-25" aria-hidden="true" tabindex="-1"></a><span class="co"># hide non-significant key signatures for valence and change mode colour to grey</span></span>
+<span id="cb110-26"><a href="#cb110-26" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>key2 <span class="ot">&lt;-</span> corrSigPlot<span class="sc">$</span>key</span>
+<span id="cb110-27"><a href="#cb110-27" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>key2[<span class="sc">!</span>corrSigPlot<span class="sc">$</span>labelsValence] <span class="ot">&lt;-</span> <span class="st">&#39;&#39;</span></span>
+<span id="cb110-28"><a href="#cb110-28" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>mode2 <span class="ot">&lt;-</span> corrSigPlot<span class="sc">$</span>mode</span>
+<span id="cb110-29"><a href="#cb110-29" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(corrSigPlot<span class="sc">$</span>mode2[<span class="sc">!</span>corrSigPlot<span class="sc">$</span>labelsValence]) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;*&#39;</span>, <span class="st">&#39;*&#39;</span>)</span>
+<span id="cb110-30"><a href="#cb110-30" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>key3 <span class="ot">&lt;-</span> corrSigPlot<span class="sc">$</span>key</span>
+<span id="cb110-31"><a href="#cb110-31" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>key3[<span class="sc">!</span>corrSigPlot<span class="sc">$</span>labelsArousal] <span class="ot">&lt;-</span> <span class="st">&#39;&#39;</span></span>
+<span id="cb110-32"><a href="#cb110-32" aria-hidden="true" tabindex="-1"></a>corrSigPlot<span class="sc">$</span>mode3 <span class="ot">&lt;-</span> corrSigPlot<span class="sc">$</span>mode</span>
+<span id="cb110-33"><a href="#cb110-33" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(corrSigPlot<span class="sc">$</span>mode3[<span class="sc">!</span>corrSigPlot<span class="sc">$</span>labelsArousal]) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&#39;*&#39;</span>, <span class="st">&#39;*&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="co"># now plot figures:</span></span>
-<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>corrSigPlot <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> valence_deadpan, <span class="at">y =</span> valence_expressive, <span class="at">label =</span> key2, <span class="at">alpha =</span> mode2)) <span class="sc">+</span> </span>
-<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">&#39;lm&#39;</span>,<span class="at">linetype =</span> <span class="dv">1</span>,<span class="at">color =</span> <span class="st">&#39;grey50&#39;</span>, <span class="at">se =</span> F, <span class="at">alpha =</span> <span class="fl">0.7</span>)<span class="sc">+</span></span>
-<span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">&#39;grey&#39;</span>, <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
-<span id="cb111-5"><a href="#cb111-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&#39;grey&#39;</span>,<span class="fu">aes</span>(<span class="at">shape =</span> composer, <span class="at">color =</span> mode2, <span class="at">alpha =</span> mode2))<span class="sc">+</span></span>
-<span id="cb111-6"><a href="#cb111-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">subset</span>(corrSigPlot, <span class="sc">!</span><span class="fu">is.na</span>(corrSigPlot<span class="sc">$</span>mode2)), </span>
-<span id="cb111-7"><a href="#cb111-7" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">shape =</span> composer, <span class="at">color =</span> mode2, <span class="at">alpha =</span> mode2))<span class="sc">+</span></span>
-<span id="cb111-8"><a href="#cb111-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">color =</span> mode2, <span class="at">alpha =</span> mode2), <span class="at">max.overlaps =</span> <span class="dv">12</span>)<span class="sc">+</span></span>
-<span id="cb111-9"><a href="#cb111-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># stat_cor(method=&quot;pearson&quot;, r.digits = 5, p.accuracy =  0.01)+</span></span>
-<span id="cb111-10"><a href="#cb111-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()<span class="sc">+</span></span>
-<span id="cb111-11"><a href="#cb111-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&#39;firebrick1&#39;</span>, <span class="st">&#39;dodgerblue2&#39;</span>))<span class="sc">+</span></span>
-<span id="cb111-12"><a href="#cb111-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_alpha_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="fl">0.2</span>))<span class="sc">+</span></span>
-<span id="cb111-13"><a href="#cb111-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&#39;Deadpan Rating&#39;</span>,<span class="at">y=</span><span class="st">&#39;Expressive Rating&#39;</span>)<span class="sc">+</span></span>
-<span id="cb111-14"><a href="#cb111-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&#39;Valence&#39;</span>) <span class="sc">+</span></span>
-<span id="cb111-15"><a href="#cb111-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&#39;none&#39;</span>) <span class="ot">-&gt;</span> cc1</span>
-<span id="cb111-16"><a href="#cb111-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb111-17"><a href="#cb111-17" aria-hidden="true" tabindex="-1"></a>corrSigPlot <span class="sc">%&gt;%</span> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> arousal_deadpan, <span class="at">y =</span> arousal_expressive, <span class="at">label =</span> key3,</span>
-<span id="cb111-18"><a href="#cb111-18" aria-hidden="true" tabindex="-1"></a>                       <span class="at">alpha =</span> mode3)) <span class="sc">+</span>  </span>
-<span id="cb111-19"><a href="#cb111-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">&#39;lm&#39;</span>,<span class="at">linetype =</span> <span class="dv">1</span>,<span class="at">color =</span> <span class="st">&#39;grey50&#39;</span>, <span class="at">se =</span> F, <span class="at">alpha =</span> <span class="fl">0.7</span>)<span class="sc">+</span></span>
-<span id="cb111-20"><a href="#cb111-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">&#39;grey&#39;</span>, <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
-<span id="cb111-21"><a href="#cb111-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&#39;grey&#39;</span>, <span class="fu">aes</span>(<span class="at">shape =</span> composer, <span class="at">color =</span> mode3, <span class="at">alpha =</span> mode3))<span class="sc">+</span></span>
-<span id="cb111-22"><a href="#cb111-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">subset</span>(corrSigPlot, <span class="sc">!</span><span class="fu">is.na</span>(corrSigPlot<span class="sc">$</span>mode3)), <span class="fu">aes</span>(<span class="at">shape =</span> composer, <span class="at">color =</span> mode3, <span class="at">alpha =</span> mode3))<span class="sc">+</span></span>
-<span id="cb111-23"><a href="#cb111-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">color =</span> mode3, <span class="at">alpha =</span> mode3), <span class="at">max.overlaps =</span> <span class="dv">15</span>, <span class="at">nudge_y =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
-<span id="cb111-24"><a href="#cb111-24" aria-hidden="true" tabindex="-1"></a>  <span class="co">#stat_cor(method=&quot;pearson&quot;, r.digits = 5, p.accuracy = 0.01)+</span></span>
-<span id="cb111-25"><a href="#cb111-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()<span class="sc">+</span></span>
-<span id="cb111-26"><a href="#cb111-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&#39;firebrick1&#39;</span>, <span class="st">&#39;dodgerblue2&#39;</span>))<span class="sc">+</span></span>
-<span id="cb111-27"><a href="#cb111-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_alpha_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="fl">0.2</span>))<span class="sc">+</span></span>
-<span id="cb111-28"><a href="#cb111-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">position =</span> <span class="st">&#39;right&#39;</span>)<span class="sc">+</span></span>
-<span id="cb111-29"><a href="#cb111-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&#39;Deadpan Rating&#39;</span>,<span class="at">y=</span><span class="st">&#39;Expressive Rating&#39;</span>)<span class="sc">+</span></span>
-<span id="cb111-30"><a href="#cb111-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&#39;Arousal&#39;</span>) <span class="sc">+</span></span>
-<span id="cb111-31"><a href="#cb111-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&#39;none&#39;</span>) <span class="ot">-&gt;</span> cc2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>corrSigPlot <span class="sc">%&gt;%</span> </span>
+<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> valence_deadpan, <span class="at">y =</span> valence_expressive, </span>
+<span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">label =</span> key2, <span class="at">alpha =</span> mode2)</span>
+<span id="cb111-5"><a href="#cb111-5" aria-hidden="true" tabindex="-1"></a>         ) <span class="sc">+</span> </span>
+<span id="cb111-6"><a href="#cb111-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">&#39;lm&#39;</span>,<span class="at">linetype =</span> <span class="dv">1</span>,<span class="at">color =</span> <span class="st">&#39;grey50&#39;</span>, <span class="at">se =</span> F, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb111-7"><a href="#cb111-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">&#39;grey&#39;</span>, <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb111-8"><a href="#cb111-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&#39;grey&#39;</span>,</span>
+<span id="cb111-9"><a href="#cb111-9" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">shape =</span> composer, <span class="at">color =</span> mode2, <span class="at">alpha =</span> mode2)</span>
+<span id="cb111-10"><a href="#cb111-10" aria-hidden="true" tabindex="-1"></a>             ) <span class="sc">+</span></span>
+<span id="cb111-11"><a href="#cb111-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb111-12"><a href="#cb111-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">subset</span>(corrSigPlot, <span class="sc">!</span><span class="fu">is.na</span>(corrSigPlot<span class="sc">$</span>mode2)), </span>
+<span id="cb111-13"><a href="#cb111-13" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">shape =</span> composer, <span class="at">color =</span> mode2, <span class="at">alpha =</span> mode2)</span>
+<span id="cb111-14"><a href="#cb111-14" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb111-15"><a href="#cb111-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">color =</span> mode2, <span class="at">alpha =</span> mode2), <span class="at">max.overlaps =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb111-16"><a href="#cb111-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb111-17"><a href="#cb111-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&#39;firebrick1&#39;</span>, <span class="st">&#39;dodgerblue2&#39;</span>)) <span class="sc">+</span></span>
+<span id="cb111-18"><a href="#cb111-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_alpha_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="fl">0.2</span>)) <span class="sc">+</span></span>
+<span id="cb111-19"><a href="#cb111-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&#39;Deadpan Rating&#39;</span>,<span class="at">y=</span><span class="st">&#39;Expressive Rating&#39;</span>) <span class="sc">+</span></span>
+<span id="cb111-20"><a href="#cb111-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&#39;Valence&#39;</span>) <span class="sc">+</span></span>
+<span id="cb111-21"><a href="#cb111-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&#39;none&#39;</span>) <span class="ot">-&gt;</span> cc1</span>
+<span id="cb111-22"><a href="#cb111-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb111-23"><a href="#cb111-23" aria-hidden="true" tabindex="-1"></a>corrSigPlot <span class="sc">%&gt;%</span> </span>
+<span id="cb111-24"><a href="#cb111-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> arousal_deadpan, <span class="at">y =</span> arousal_expressive,</span>
+<span id="cb111-25"><a href="#cb111-25" aria-hidden="true" tabindex="-1"></a>             <span class="at">label =</span> key3, <span class="at">alpha =</span> mode3)) <span class="sc">+</span>  </span>
+<span id="cb111-26"><a href="#cb111-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">&#39;lm&#39;</span>,<span class="at">linetype =</span> <span class="dv">1</span>,<span class="at">color =</span> <span class="st">&#39;grey50&#39;</span>, <span class="at">se =</span> F, <span class="at">alpha =</span> <span class="fl">0.7</span>)<span class="sc">+</span></span>
+<span id="cb111-27"><a href="#cb111-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_abline</span>(<span class="at">color =</span> <span class="st">&#39;grey&#39;</span>, <span class="at">linetype =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb111-28"><a href="#cb111-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">&#39;grey&#39;</span>, <span class="fu">aes</span>(<span class="at">shape =</span> composer, <span class="at">color =</span> mode3, <span class="at">alpha =</span> mode3))<span class="sc">+</span></span>
+<span id="cb111-29"><a href="#cb111-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> <span class="fu">subset</span>(corrSigPlot, <span class="sc">!</span><span class="fu">is.na</span>(corrSigPlot<span class="sc">$</span>mode3)), </span>
+<span id="cb111-30"><a href="#cb111-30" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(<span class="at">shape =</span> composer, <span class="at">color =</span> mode3, <span class="at">alpha =</span> mode3)</span>
+<span id="cb111-31"><a href="#cb111-31" aria-hidden="true" tabindex="-1"></a>             )<span class="sc">+</span></span>
+<span id="cb111-32"><a href="#cb111-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">color =</span> mode3, <span class="at">alpha =</span> mode3), <span class="at">max.overlaps =</span> <span class="dv">15</span>, <span class="at">nudge_y =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb111-33"><a href="#cb111-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()<span class="sc">+</span></span>
+<span id="cb111-34"><a href="#cb111-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&#39;firebrick1&#39;</span>, <span class="st">&#39;dodgerblue2&#39;</span>))<span class="sc">+</span></span>
+<span id="cb111-35"><a href="#cb111-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_alpha_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="fl">0.2</span>))<span class="sc">+</span></span>
+<span id="cb111-36"><a href="#cb111-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">position =</span> <span class="st">&#39;right&#39;</span>)<span class="sc">+</span></span>
+<span id="cb111-37"><a href="#cb111-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&#39;Deadpan Rating&#39;</span>,<span class="at">y=</span><span class="st">&#39;Expressive Rating&#39;</span>)<span class="sc">+</span></span>
+<span id="cb111-38"><a href="#cb111-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">&#39;Arousal&#39;</span>) <span class="sc">+</span></span>
+<span id="cb111-39"><a href="#cb111-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&#39;none&#39;</span>) <span class="ot">-&gt;</span> cc2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="co"># layout figures...</span></span>
-<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a>cc1<span class="ot">&lt;-</span>cc1<span class="sc">+</span><span class="fu">xlim</span>(<span class="dv">1</span>,<span class="dv">7</span>)<span class="sc">+</span><span class="fu">ylim</span>(<span class="dv">1</span>,<span class="dv">7</span>)<span class="sc">+</span><span class="fu">labs</span>(<span class="at">x=</span><span class="st">&#39;Deadpan Rating&#39;</span>,<span class="at">y=</span><span class="st">&#39;Expressive Rating&#39;</span>)</span>
-<span id="cb112-3"><a href="#cb112-3" aria-hidden="true" tabindex="-1"></a>cc2<span class="ot">&lt;-</span>cc2<span class="sc">+</span><span class="fu">xlim</span>(<span class="dv">1</span>,<span class="dv">100</span>)<span class="sc">+</span><span class="fu">ylim</span>(<span class="dv">1</span>,<span class="dv">100</span>)<span class="sc">+</span><span class="fu">labs</span>(<span class="at">x=</span><span class="st">&#39;Deadpan Rating&#39;</span>,<span class="at">y=</span><span class="st">&#39;Expressive Rating&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb112-2"><a href="#cb112-2" aria-hidden="true" tabindex="-1"></a>cc1<span class="ot">&lt;-</span>cc1 <span class="sc">+</span> </span>
+<span id="cb112-3"><a href="#cb112-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">1</span>,<span class="dv">7</span>) <span class="sc">+</span></span>
+<span id="cb112-4"><a href="#cb112-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">1</span>,<span class="dv">7</span>) <span class="sc">+</span></span>
+<span id="cb112-5"><a href="#cb112-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&#39;Deadpan Rating&#39;</span>,</span>
+<span id="cb112-6"><a href="#cb112-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&#39;Expressive Rating&#39;</span>)</span>
+<span id="cb112-7"><a href="#cb112-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb112-8"><a href="#cb112-8" aria-hidden="true" tabindex="-1"></a>cc2<span class="ot">&lt;-</span> cc2 <span class="sc">+</span> </span>
+<span id="cb112-9"><a href="#cb112-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="dv">1</span>,<span class="dv">100</span>) <span class="sc">+</span> </span>
+<span id="cb112-10"><a href="#cb112-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">1</span>,<span class="dv">100</span>) <span class="sc">+</span> </span>
+<span id="cb112-11"><a href="#cb112-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&#39;Deadpan Rating&#39;</span>,</span>
+<span id="cb112-12"><a href="#cb112-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span><span class="st">&#39;Expressive Rating&#39;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Scale for y is already present.
 Adding another scale for y, which will replace the existing scale.</code></pre>

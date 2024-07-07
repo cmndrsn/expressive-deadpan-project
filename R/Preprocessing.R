@@ -15,8 +15,8 @@ sharpSym <- '\\u266f'
 bootData$changeValence = .getPercentChange(bootData$valenceA, bootData$valenceB)
 bootData$changeArousal = .getPercentChange(bootData$arousalA, bootData$arousalB)
 bootData %>%
-  group_by(pieceID) %>%
-  summarize(changeValenceMean = mean(changeValence),
+  dplyr::group_by(pieceID) %>%
+  dplyr::summarize(changeValenceMean = mean(changeValence),
             changeValenceLCI = quantile(changeValence, 0.025),
             changeValenceUCI = quantile(changeValence, 0.975),
             changeArousalMean = mean(changeArousal),
@@ -40,8 +40,8 @@ bootPlotDF$composer = as.factor(bootPlotDF$composer); levels(bootPlotDF$composer
 bach <- subset(emoData, expID %in% c(141, 142))
 chop <- subset(emoData, expID %in% c(101, 137))
 
-bach$key = prettyKeyCol(bach$key)
-chop$key = prettyKeyCol(chop$key)
+bach$key <- prettyKeyCol(bach$key)
+chop$key <- prettyKeyCol(chop$key)
 
 # remove this if errors produced (calls C# piece Db for consistency with score)
 
@@ -56,32 +56,32 @@ chopE = subset(chop, expID == '101')
 #chopE = subset(chopE, participant %in% unique(chopE$participant)[1:30])
 
 
-chopD = subset(chop, expID == '137')
+chopD <- subset(chop, expID == '137')
 #chopD$condition = 'deadpan'
 #chopD = subset(chopD, participant %in% unique(chopD$participant)[1:30])
 
 ## Bach:
 
-bachE = subset(bach, expID == '141')
+bachE <- subset(bach, expID == '141')
 #bachE$condition = 'expressive'
 #bachE = subset(bachE, participant %in% unique(bachE$participant)[1:32])
 # remove participants who didn't use full range of scale
 #bachE = subset(bachE, !participant %in% c('18','21'))
 
-bachD = subset(bach, expID == '142')
+bachD <- subset(bach, expID == '142')
 #bachD$condition = 'deadpan'
 #bachD = subset(bachD, participant %in% unique(bachD$participant)[1:30])
 
 # collect deadpan ratings
-deadpan = rbind(chopD, bachD)
+deadpan <- rbind(chopD, bachD)
 # collect expressive ratings
-expressive = rbind(chopE, bachE)
+expressive <- rbind(chopE, bachE)
 # collect chopin ratings
-chopConditions = rbind(chopD, chopE)
+chopConditions <- rbind(chopD, chopE)
 # collect bach ratings
-bachConds = rbind(bachD, bachE)
+bachConds <- rbind(bachD, bachE)
 # collect all ratings
-fullDat = rbind(deadpan, expressive)
+fullDat <- rbind(deadpan, expressive)
 # replace participant IDs with unique values
 paste0(fullDat$participant, 
        substr(fullDat$composer,1,1), 
@@ -93,32 +93,35 @@ fullDat$participant = pptUnique
 
 dummyDat <- data.frame(x=c(1,2),y=c(1,3), z = c('Major','minor'), w = c('Bach','Chopin'), v = c('Regression', 'Unity'))
 
-ggplot(data = dummyDat, aes(x=x,y=y,color = z, shape = w, linetype = v))+
-  geom_point()+
-  theme(legend.position = 'top')+
-  geom_abline(color = 'black')+
-  geom_smooth(color = 'grey50')+
-  scale_linetype_manual(name = 'Line',
+ggplot2::ggplot(data = dummyDat, aes(x=x,y=y,color = z, shape = w, linetype = v))+
+  ggplot2::geom_point()+
+  ggplot2::theme(legend.position = 'top')+
+  ggplot2::geom_abline(color = 'black')+
+  ggplot2::geom_smooth(color = 'grey50')+
+  ggplot2::scale_linetype_manual(name = 'Line',
                         breaks= c('Unity', 'Regression'),
                         values = c(9,1))+
-  scale_color_manual(name='Mode',
+  ggplot2::scale_color_manual(name='Mode',
                      breaks=c('Major', 'minor'),
                      values=c('Major'='firebrick1', 'minor'='dodgerblue2'))+
-  scale_shape_manual(name='Composer',
+  ggplot2::scale_shape_manual(name='Composer',
                      breaks=c('Bach', 'Chopin'),
                      values=c(16,17)) -> correlationLegendManual
 
-correlationLegend = cowplot::get_plot_component(correlationLegendManual, 'guide-box-top', return_all = TRUE)
+correlationLegend = cowplot::get_plot_component(correlationLegendManual, 
+                                                'guide-box-top', 
+                                                return_all = TRUE)
 
 # Get legend for percent correlation figure -------------------------------
 
-ggplot(data = dummyDat, aes(x=x,y=y,color = z, shape = w))+
-  geom_point(aes(x=1,y=1))+
-  theme(legend.position = 'top')+
-  scale_color_manual(name='Mode',
+ggplot2::ggplot(data = dummyDat, aes(x=x,y=y,color = z, shape = w))+
+  ggplot2::geom_point(aes(x=1,y=1))+
+  ggplot2::theme(legend.position = 'top')+
+  ggplot2::scale_color_manual(name='Mode',
                      breaks=c('Major', 'minor'),
-                     values=c('Major'='firebrick1', 'minor'='dodgerblue2'))+
-  scale_shape_manual(name='Composer',
+                     values=c('Major'='firebrick1', 
+                              'minor'='dodgerblue2'))+
+  ggplot2::scale_shape_manual(name='Composer',
                      breaks=c('Bach', 'Chopin'),
                      values=c(16,17)) -> percentLegendManual
 
@@ -189,7 +192,13 @@ panel2Plot$key = nameKeysSimple(substr(panel2Plot$pieceID, 1, nchar(panel2Plot$p
 panel2Plot$key = as.factor(prettyKeyCol(panel2Plot$key))
 
 
-levels(panel2Plot$key)[which(levels(panel2Plot$key) == eval(parse(text=paste0("'", 'C', sharpSym, "'"))))] <- eval(parse(text=paste0("'", 'C', sharpSym, '/D',  flatSym, "'")))
+levels(panel2Plot$key)[which(levels(panel2Plot$key) == 
+                               eval(parse(text=paste0("'", 'C', sharpSym, "'")
+                                          )
+                                    ))] <- eval(
+                                      parse(text=paste0("'", 'C', 
+                                                        sharpSym, '/D',  
+                                                        flatSym, "'")))
 
 # initialize column to colour mode
 panel2Plot$modeColVal = 'n'
