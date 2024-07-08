@@ -1,6 +1,6 @@
 # Expressive/Deadpan Project
 ## Overview
-This paper contains the data, code, and figures from Anderson, Ling, & Schutz (under review). We performed analyses using *R* (version 4.2.3) on the Windows 10 operating system (version 22H2). To use this code, you must first [install *R*, *RStudio*](https://rstudio-education.github.io/hopr/starting.html), and [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
+This paper contains the data, code, and figures from Anderson, Ling, & Schutz (under review). We performed analyses using *R* (version 4.2.3) on the Windows 10 operating system (version 22H2). To use this code, you must first install [*R* and *RStudio*](https://rstudio-education.github.io/hopr/starting.html), along with [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 ## File organization
 Analysis code is organized in .qmd and .r files within the repository. 
 - Data are contained in the `/Data` folder.  
