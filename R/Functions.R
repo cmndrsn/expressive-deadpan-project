@@ -7,6 +7,55 @@
 .getCoefficientofVariation <- function(X) sd(X)/mean(X)
 .getPercentChange <- function(X, Y) ((X - Y)/abs(Y))*100
 
+
+nameKeys = function(dat, type = 'key') #internal function for assigning key signature based on piece ID
+{
+  if(type == 'key')
+  {
+    dat$key = as.factor(dat$pieceID)
+    dat$key = plyr::revalue(dat$key, c(M0 = "C", m0 = "c", M1 = "C#", m1 = "c#", 
+                                       M2 = "D", m2 = "d",M3 = "Eb", m3 = "eb", 
+                                       M4 = "E", m4 = "e", M5 = "F", m5 = "f",
+                                       M6 = "F#", m6 = "f#", M7 = "G", m7 = "g", 
+                                       M8 = "Ab", m8 = "ab", M9 = "A", m9 = "a", 
+                                       M10 = "Bb", m10 = "bb", M11 = "B", m11 = "b"))
+  }
+  else if(type == 'pieceID')
+  {
+    dat$pieceID = as.factor(dat$key)
+    dat$pieceID = plyr::revalue(dat$pieceID, c(C = "M0", c = "m0", `C#` = "M1", `c#` = "m1", 
+                                               `Db` = "M1", `db` = "m1", 
+                                               D = "M2", d = "m2",
+                                               Eb = "M3", eb = "m3", 
+                                               E = "M4", e = "m4", `F` = "M5", f = "m5",
+                                               `F#` = "M6", `f#` = "m6", G = "M7", g = "m7", 
+                                               Ab = "M8", `G#` = "M8", `g#` = "m8",  ab = "m8", A = "M9", a = "m9", 
+                                               Bb = "M10", bb = "m10", B = "M11", b = "m11"))
+  }
+  return(dat)
+}
+prettyKeySig = function(dat, keyCol = 'key')
+{
+  
+  # prepare unicode for fancy sharp and flat signs:
+  flatSym <- '\\u266d'
+  sharpSym <- '\\u266f'
+  # isolate letter name:
+  keyChroma = substr(dat[,keyCol],1,1)
+  # isolate sharp and flat signs
+  keyAccidental = substr(dat[,keyCol],2,2)
+  # replace "b" with proper flat symbol
+  keyAccidental[keyAccidental == "b"] = eval(parse(text=paste0("'", flatSym, "'")))
+  # replace "#" with proper sharp symbol
+  keyAccidental[keyAccidental == "#"] = eval(parse(text=paste0("'", sharpSym, "'")))
+  # create fancy key signature
+  fancyKey = paste0(keyChroma, keyAccidental)
+  # replace original key column with fancy key:
+  dat[,keyCol] = fancyKey
+  
+  return(dat)
+}
+
 collapseMeasures <- function(dat,includePickups=T)
 {
   retDat <- dat
@@ -305,7 +354,7 @@ pairedCircumplex <- function(dat, groupCol = expID,
                             sampleSize = sampleSize)},
     simplify = F)
   
-  differenceSample <- map_df(differenceSample, ~as.data.frame(.x), .id="pieceID")
+  differenceSample <- purrr::map_df(differenceSample, ~as.data.frame(.x), .id="pieceID")
   # transpose it for dataframe formatting
   
   if(collapseRatings) return(.collapseSampleDifferenceArray(differenceSample))
