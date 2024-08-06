@@ -273,7 +273,7 @@ percentCorrelationPlot(expressiveRatingsAvg,
                      x = expressiveRatingsAvg$arPerf,
                      axis.text.x = element_blank(),
                      axis.ticks.x = element_blank(),
-                     legend.position = 'none') -> cp1
+                     legend.position = 'none')+labs(subtitle = 'Valence') -> cp1
 percentCorrelationPlot(expressiveRatingsAvg, 
                        y = expressiveRatingsAvg$valenceDiff,
                        ylim = c(-1,25),
@@ -284,7 +284,7 @@ percentCorrelationPlot(expressiveRatingsAvg,
                        axis.line.y = element_blank(),
                        axis.text.x = element_blank(),
                        axis.ticks.x = element_blank(),
-                       legend.position = 'none') -> cp2
+                       legend.position = 'none')+labs(subtitle = ' ') -> cp2
 percentCorrelationPlot(expressiveRatingsAvg, 
                        y = expressiveRatingsAvg$valenceDiff, 
                        ylim = c(-1,25),
@@ -295,14 +295,14 @@ percentCorrelationPlot(expressiveRatingsAvg,
                        axis.line.y = element_blank(),
                        axis.text.x = element_blank(),
                        axis.ticks.x = element_blank(),
-                       legend.position = 'none') -> cp3
+                       legend.position = 'none')+labs(subtitle = ' ') -> cp3
   ## OVER AROUSAL
   
 percentCorrelationPlot(expressiveRatingsAvg, 
                      y = expressiveRatingsAvg$arousalDiff, 
                      x = expressiveRatingsAvg$arPerf,
                      xLab = 'Attack Rate',
-                     legend.position = 'none') -> cp4
+                     legend.position = 'none')+labs(subtitle = 'Arousal') -> cp4
 percentCorrelationPlot(expressiveRatingsAvg, 
                      y = expressiveRatingsAvg$arousalDiff, 
                      x = expressiveRatingsAvg$rms,
@@ -311,7 +311,7 @@ percentCorrelationPlot(expressiveRatingsAvg,
                      axis.ticks.y = element_blank(),
                      axis.title.y = element_blank(),
                      axis.line.y = element_blank(),
-                     legend.position = 'none') -> cp5
+                     legend.position = 'none')+labs(subtitle = ' ') -> cp5
 percentCorrelationPlot(expressiveRatingsAvg, 
                      y = expressiveRatingsAvg$arousalDiff, 
                      x = expressiveRatingsAvg$pitchHeight,
@@ -320,14 +320,14 @@ percentCorrelationPlot(expressiveRatingsAvg,
                      axis.ticks.y = element_blank(),
                      axis.title.y = element_blank(),
                      axis.line.y = element_blank(),
-                     legend.position = 'none') -> cp6
+                     legend.position = 'none')+labs(subtitle = ' ') -> cp6
 grid.arrange(percentLegend,
              cp1, cp2, cp3, cp4, cp5, cp6,
              left = 'Absolute Difference (%)',
             # ncol = 3, nrow = 2,
              layout_matrix = pctCorLay) -> cuePercentPlot
 
- ggsave(filename = paste0(here::here(), 
+ ggsave(filename = paste0(here::here(),
                           '/Figures/Fig 2-', Sys.Date(), '.png'),
         plot = cuePercentPlot,
         width = 7.5, height = 4.5)
